@@ -8070,5 +8070,5 @@ const movies = [
     year: 2019,
     director: "Ari Aster",
     genre: "Drama, Horror, Mystery"
-  }
+}  
 ];
