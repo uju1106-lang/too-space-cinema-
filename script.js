@@ -1,4 +1,3 @@
-```javascript
 /* =====================================================
    TOO SPACE CINEMA
    Movie Website Controller
@@ -1457,4 +1456,3 @@ function escapeAttribute(value) {
   return escapeHTML(value);
 
 }
-```
