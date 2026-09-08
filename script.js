@@ -1,9 +1,20 @@
 /* =====================================================
    TOO SPACE CINEMA
    Movie Website Controller
+   =====================================================
 
-   영화 데이터는 나중에 별도의 movies.js 파일로
-   분리할 수 있도록 구조를 만들어 둠.
+   주요 기능
+   - 영화 검색
+   - 한국어 / 영어 / 별칭 검색
+   - 부분 검색
+   - 장르 필터
+   - 평점순 / 최신순 / 오래된순 정렬
+   - 영화 상세 모달
+   - 더보기
+   - 평점 만점 자동 환산
+   - 없음 평점 자동 제외
+   - 종합 평점 10점 만점 통일
+
 ===================================================== */
 
 
@@ -21,7 +32,11 @@ const movies = [
 
     year: 2024,
 
-    genre: ["공포", "미스터리", "드라마"],
+    genre: [
+      "공포",
+      "미스터리",
+      "드라마"
+    ],
 
     aliases: [
       "파묘",
@@ -442,7 +457,7 @@ const movies = [
     },
 
     description:
-      "새로운 자신을 만들어내는 정체불명의 물질을 둘러싸고 벌어지는 SF 바디 호러 영화."
+      "새로운 자신을 만들어내는 정체불명의 물질을 둘러싸고 벌어지는 SF 스릴러 영화."
   }
 
 ];
@@ -466,59 +481,335 @@ let currentSort = "popular";
 
 
 /* =====================================================
+   RATING SYSTEM
+===================================================== */
+
+/*
+  모든 평점을 10점 만점으로 변환한다.
+
+  IMDb
+  10점 → 그대로
+
+  NAVER
+  10점 → 그대로
+
+  CINE21
+  5점 → ×2
+
+  Letterboxd
+  5점 → ×2
+
+  Rotten Tomatoes
+  100점 → ÷10
+*/
+
+const RATING_SCALES = {
+
+  imdb: 10,
+
+  naver: 10,
+
+  cine21: 5,
+
+  rottenTomatoes: 100,
+
+  letterboxd: 5
+
+};
+
+
+/*
+  평점 이름
+*/
+
+const RATING_NAMES = {
+
+  imdb: "IMDb",
+
+  naver: "NAVER",
+
+  cine21: "CINE21",
+
+  rottenTomatoes: "Rotten Tomatoes",
+
+  letterboxd: "Letterboxd"
+
+};
+
+
+/*
+  평점 숫자 확인
+*/
+
+function ratingNumber(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    value === "없음"
+  ) {
+
+    return null;
+
+  }
+
+
+  const number =
+    Number(value);
+
+
+  if (!Number.isFinite(number)) {
+
+    return null;
+
+  }
+
+
+  return number;
+
+}
+
+
+/*
+  평점을 10점 만점으로 변환
+*/
+
+function convertRatingToTen(
+  site,
+  value
+) {
+
+  const number =
+    ratingNumber(value);
+
+
+  if (number === null) {
+
+    return null;
+
+  }
+
+
+  const scale =
+    RATING_SCALES[site];
+
+
+  if (!scale) {
+
+    return null;
+
+  }
+
+
+  let converted;
+
+
+  if (scale === 10) {
+
+    converted = number;
+
+  }
+
+  else {
+
+    converted =
+      number * 10 / scale;
+
+  }
+
+
+  /*
+    0~10 범위 보호
+  */
+
+  converted =
+    Math.max(
+      0,
+      Math.min(
+        10,
+        converted
+      )
+    );
+
+
+  return Number(
+    converted.toFixed(2)
+  );
+
+}
+
+
+/*
+  특정 사이트 평점을
+  10점 만점으로 가져오기
+*/
+
+function getNormalizedRating(
+  movie,
+  site
+) {
+
+  if (
+    !movie ||
+    !movie.ratings
+  ) {
+
+    return null;
+
+  }
+
+
+  return convertRatingToTen(
+    site,
+    movie.ratings[site]
+  );
+
+}
+
+
+/*
+  종합 평점 계산
+
+  중요:
+  - 없음 제외
+  - 각 사이트를 10점으로 변환
+  - 실제 존재하는 평점만 평균
+*/
+
+function getOverallRating(movie) {
+
+  const sites = [
+    "imdb",
+    "naver",
+    "cine21",
+    "rottenTomatoes",
+    "letterboxd"
+  ];
+
+
+  const ratings = sites
+    .map(site =>
+      getNormalizedRating(
+        movie,
+        site
+      )
+    )
+    .filter(
+      value =>
+        value !== null
+    );
+
+
+  if (!ratings.length) {
+
+    return null;
+
+  }
+
+
+  const sum =
+    ratings.reduce(
+      (
+        total,
+        value
+      ) => total + value,
+      0
+    );
+
+
+  const average =
+    sum / ratings.length;
+
+
+  return Number(
+    average.toFixed(1)
+  );
+
+}
+
+
+/* =====================================================
    DOM
 ===================================================== */
 
 const movieGrid =
-  document.getElementById("movieGrid");
+  document.getElementById(
+    "movieGrid"
+  );
 
 const searchInput =
-  document.getElementById("searchInput");
+  document.getElementById(
+    "searchInput"
+  );
 
 const clearSearch =
-  document.getElementById("clearSearch");
+  document.getElementById(
+    "clearSearch"
+  );
 
 const genreFilter =
-  document.getElementById("genreFilter");
+  document.getElementById(
+    "genreFilter"
+  );
 
 const sortSelect =
-  document.getElementById("sortSelect");
+  document.getElementById(
+    "sortSelect"
+  );
 
 const resultCount =
-  document.getElementById("resultCount");
+  document.getElementById(
+    "resultCount"
+  );
 
 const emptyMessage =
-  document.getElementById("emptyMessage");
+  document.getElementById(
+    "emptyMessage"
+  );
 
 const resetButton =
-  document.getElementById("resetButton");
+  document.getElementById(
+    "resetButton"
+  );
 
 const loadMoreButton =
-  document.getElementById("loadMoreButton");
+  document.getElementById(
+    "loadMoreButton"
+  );
 
 const movieModal =
-  document.getElementById("movieModal");
+  document.getElementById(
+    "movieModal"
+  );
 
 const modalBody =
-  document.getElementById("modalBody");
+  document.getElementById(
+    "modalBody"
+  );
 
 const modalClose =
-  document.getElementById("modalClose");
+  document.getElementById(
+    "modalClose"
+  );
 
 
 /* =====================================================
    INIT
 ===================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-  createGenreButtons();
+    createGenreButtons();
 
-  updateMovies();
+    updateMovies();
 
-  setupEvents();
+    setupEvents();
 
-});
+  }
+);
 
 
 /* =====================================================
@@ -527,73 +818,109 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupEvents() {
 
-  searchInput.addEventListener(
-    "input",
-    handleSearch
-  );
+  if (searchInput) {
+
+    searchInput.addEventListener(
+      "input",
+      handleSearch
+    );
+
+  }
 
 
-  clearSearch.addEventListener(
-    "click",
-    () => {
+  if (clearSearch) {
 
-      searchInput.value = "";
+    clearSearch.addEventListener(
+      "click",
+      () => {
 
-      currentSearch = "";
+        searchInput.value = "";
 
-      updateMovies();
+        currentSearch = "";
 
-      searchInput.focus();
+        clearSearch.classList.remove(
+          "show"
+        );
 
-    }
-  );
+        updateMovies();
 
+        searchInput.focus();
 
-  sortSelect.addEventListener(
-    "change",
-    () => {
+      }
+    );
 
-      currentSort =
-        sortSelect.value;
-
-      currentPage = 1;
-
-      updateMovies();
-
-    }
-  );
+  }
 
 
-  resetButton.addEventListener(
-    "click",
-    resetFilters
-  );
+  if (sortSelect) {
+
+    sortSelect.addEventListener(
+      "change",
+      () => {
+
+        currentSort =
+          sortSelect.value;
+
+        currentPage = 1;
+
+        updateMovies();
+
+      }
+    );
+
+  }
 
 
-  loadMoreButton.addEventListener(
-    "click",
-    () => {
+  if (resetButton) {
 
-      currentPage++;
+    resetButton.addEventListener(
+      "click",
+      resetFilters
+    );
 
-      renderMovies();
-
-    }
-  );
+  }
 
 
-  modalClose.addEventListener(
-    "click",
-    closeModal
-  );
+  if (loadMoreButton) {
+
+    loadMoreButton.addEventListener(
+      "click",
+      () => {
+
+        currentPage++;
+
+        renderMovies();
+
+      }
+    );
+
+  }
 
 
-  document
-    .querySelector(".modal-background")
-    .addEventListener(
+  if (modalClose) {
+
+    modalClose.addEventListener(
       "click",
       closeModal
     );
+
+  }
+
+
+  const modalBackground =
+    document.querySelector(
+      ".modal-background"
+    );
+
+
+  if (modalBackground) {
+
+    modalBackground.addEventListener(
+      "click",
+      closeModal
+    );
+
+  }
 
 
   document.addEventListener(
@@ -602,7 +929,10 @@ function setupEvents() {
 
       if (
         event.key === "Escape" &&
-        !movieModal.classList.contains("hidden")
+        movieModal &&
+        !movieModal.classList.contains(
+          "hidden"
+        )
       ) {
 
         closeModal();
@@ -624,7 +954,10 @@ function normalizeText(text) {
   return String(text || "")
     .toLowerCase()
     .replace(/\s+/g, "")
-    .replace(/[^\p{L}\p{N}]/gu, "");
+    .replace(
+      /[^\p{L}\p{N}]/gu,
+      ""
+    );
 
 }
 
@@ -634,12 +967,19 @@ function handleSearch(event) {
   currentSearch =
     event.target.value.trim();
 
+
   currentPage = 1;
 
-  clearSearch.classList.toggle(
-    "show",
-    currentSearch.length > 0
-  );
+
+  if (clearSearch) {
+
+    clearSearch.classList.toggle(
+      "show",
+      currentSearch.length > 0
+    );
+
+  }
+
 
   updateMovies();
 
@@ -649,11 +989,23 @@ function handleSearch(event) {
 function movieMatchesSearch(movie) {
 
   if (!currentSearch) {
+
     return true;
+
   }
 
+
   const keyword =
-    normalizeText(currentSearch);
+    normalizeText(
+      currentSearch
+    );
+
+
+  if (!keyword) {
+
+    return true;
+
+  }
 
 
   const searchable = [
@@ -673,12 +1025,11 @@ function movieMatchesSearch(movie) {
   ];
 
 
-  return searchable.some(item => {
-
-    return normalizeText(item)
-      .includes(keyword);
-
-  });
+  return searchable.some(
+    item =>
+      normalizeText(item)
+        .includes(keyword)
+  );
 
 }
 
@@ -689,39 +1040,143 @@ function movieMatchesSearch(movie) {
 
 function createGenreButtons() {
 
-  const genres = new Set();
+  if (!genreFilter) {
+
+    return;
+
+  }
 
 
-  movies.forEach(movie => {
+  const genres =
+    new Set();
 
-    movie.genre.forEach(genre => {
 
-      genres.add(genre);
+  movies.forEach(
+    movie => {
 
-    });
+      (
+        movie.genre || []
+      ).forEach(
+        genre =>
+          genres.add(genre)
+      );
 
-  });
+    }
+  );
+
+
+  /*
+    기존 버튼이 있으면
+    중복 생성 방지
+  */
+
+  const existingButtons =
+    genreFilter.querySelectorAll(
+      ".filter-button"
+    );
+
+
+  if (
+    existingButtons.length > 0
+  ) {
+
+    genreFilter
+      .querySelectorAll(
+        ".filter-button:not([data-genre='전체'])"
+      )
+      .forEach(
+        button =>
+          button.remove()
+      );
+
+  }
 
 
   [...genres]
-    .sort()
-    .forEach(genre => {
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "ko"
+        )
+    )
+    .forEach(
+      genre => {
 
-      const button =
-        document.createElement("button");
+        const button =
+          document.createElement(
+            "button"
+          );
 
-      button.className =
-        "filter-button";
+        button.className =
+          "filter-button";
 
-      button.dataset.genre =
-        genre;
+        button.dataset.genre =
+          genre;
 
-      button.textContent =
-        genre;
+        button.textContent =
+          genre;
 
-      genreFilter.appendChild(button);
+        genreFilter.appendChild(
+          button
+        );
 
-    });
+      }
+    );
+
+
+  /*
+    전체 버튼이 없다면 생성
+  */
+
+  let allButton =
+    genreFilter.querySelector(
+      "[data-genre='전체']"
+    );
+
+
+  if (!allButton) {
+
+    allButton =
+      document.createElement(
+        "button"
+      );
+
+    allButton.className =
+      "filter-button";
+
+    allButton.dataset.genre =
+      "전체";
+
+    allButton.textContent =
+      "전체";
+
+    genreFilter.prepend(
+      allButton
+    );
+
+  }
+
+
+  /*
+    전체를 기본 활성화
+  */
+
+  genreFilter
+    .querySelectorAll(
+      ".filter-button"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.genre ===
+            "전체"
+        );
+
+      }
+    );
 
 
   genreFilter.addEventListener(
@@ -733,30 +1188,37 @@ function createGenreButtons() {
           ".filter-button"
         );
 
+
       if (!button) {
+
         return;
+
       }
 
-      document
+
+      genreFilter
         .querySelectorAll(
           ".filter-button"
         )
-        .forEach(btn => {
+        .forEach(
+          btn =>
+            btn.classList.remove(
+              "active"
+            )
+        );
 
-          btn.classList.remove(
-            "active"
-          );
 
-        });
-
-
-      button.classList.add("active");
+      button.classList.add(
+        "active"
+      );
 
 
       currentGenre =
         button.dataset.genre;
 
+
       currentPage = 1;
+
 
       updateMovies();
 
@@ -772,99 +1234,31 @@ function createGenreButtons() {
 
 function filterMovies() {
 
-  return movies.filter(movie => {
+  return movies.filter(
+    movie => {
 
-    const genreMatch =
-      currentGenre === "전체" ||
-      movie.genre.includes(
-        currentGenre
+      const genreMatch =
+        currentGenre ===
+          "전체" ||
+        (
+          movie.genre || []
+        ).includes(
+          currentGenre
+        );
+
+
+      const searchMatch =
+        movieMatchesSearch(
+          movie
+        );
+
+
+      return (
+        genreMatch &&
+        searchMatch
       );
 
-
-    const searchMatch =
-      movieMatchesSearch(movie);
-
-
-    return genreMatch &&
-      searchMatch;
-
-  });
-
-}
-
-
-/* =====================================================
-   RATINGS
-===================================================== */
-
-function ratingNumber(value) {
-
-  if (
-    value === null ||
-    value === undefined ||
-    value === "없음"
-  ) {
-
-    return null;
-
-  }
-
-  const number =
-    Number(value);
-
-  return Number.isFinite(number)
-    ? number
-    : null;
-
-}
-
-
-function getOverallRating(movie) {
-
-  const ratings = [
-
-    ratingNumber(
-      movie.ratings.imdb
-    ),
-
-    ratingNumber(
-      movie.ratings.naver
-    ),
-
-    ratingNumber(
-      movie.ratings.cine21
-    ),
-
-    ratingNumber(
-      movie.ratings.rottenTomatoes
-    ),
-
-    ratingNumber(
-      movie.ratings.letterboxd
-    )
-
-  ].filter(
-    value => value !== null
-  );
-
-
-  if (!ratings.length) {
-
-    return null;
-
-  }
-
-
-  const average =
-    ratings.reduce(
-      (sum, value) =>
-        sum + value,
-      0
-    ) / ratings.length;
-
-
-  return Number(
-    average.toFixed(1)
+    }
   );
 
 }
@@ -874,20 +1268,31 @@ function getOverallRating(movie) {
    SORT
 ===================================================== */
 
-function sortMovies(movieList) {
+function sortMovies(
+  movieList
+) {
 
   const sorted =
     [...movieList];
 
 
-  switch (currentSort) {
+  switch (
+    currentSort
+  ) {
+
 
     case "overall":
 
       sorted.sort(
         (a, b) =>
-          (getOverallRating(b) ?? -1) -
-          (getOverallRating(a) ?? -1)
+          (
+            getOverallRating(b)
+            ?? -1
+          ) -
+          (
+            getOverallRating(a)
+            ?? -1
+          )
       );
 
       break;
@@ -897,12 +1302,20 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          (ratingNumber(
-            b.ratings.imdb
-          ) ?? -1) -
-          (ratingNumber(
-            a.ratings.imdb
-          ) ?? -1)
+          (
+            getNormalizedRating(
+              b,
+              "imdb"
+            )
+            ?? -1
+          ) -
+          (
+            getNormalizedRating(
+              a,
+              "imdb"
+            )
+            ?? -1
+          )
       );
 
       break;
@@ -912,12 +1325,20 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          (ratingNumber(
-            b.ratings.naver
-          ) ?? -1) -
-          (ratingNumber(
-            a.ratings.naver
-          ) ?? -1)
+          (
+            getNormalizedRating(
+              b,
+              "naver"
+            )
+            ?? -1
+          ) -
+          (
+            getNormalizedRating(
+              a,
+              "naver"
+            )
+            ?? -1
+          )
       );
 
       break;
@@ -927,12 +1348,20 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          (ratingNumber(
-            b.ratings.cine21
-          ) ?? -1) -
-          (ratingNumber(
-            a.ratings.cine21
-          ) ?? -1)
+          (
+            getNormalizedRating(
+              b,
+              "cine21"
+            )
+            ?? -1
+          ) -
+          (
+            getNormalizedRating(
+              a,
+              "cine21"
+            )
+            ?? -1
+          )
       );
 
       break;
@@ -942,12 +1371,43 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          (ratingNumber(
-            b.ratings.rottenTomatoes
-          ) ?? -1) -
-          (ratingNumber(
-            a.ratings.rottenTomatoes
-          ) ?? -1)
+          (
+            getNormalizedRating(
+              b,
+              "rottenTomatoes"
+            )
+            ?? -1
+          ) -
+          (
+            getNormalizedRating(
+              a,
+              "rottenTomatoes"
+            )
+            ?? -1
+          )
+      );
+
+      break;
+
+
+    case "letterboxd":
+
+      sorted.sort(
+        (a, b) =>
+          (
+            getNormalizedRating(
+              b,
+              "letterboxd"
+            )
+            ?? -1
+          ) -
+          (
+            getNormalizedRating(
+              a,
+              "letterboxd"
+            )
+            ?? -1
+          )
       );
 
       break;
@@ -957,7 +1417,12 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          b.year - a.year
+          (
+            Number(b.year) || 0
+          ) -
+          (
+            Number(a.year) || 0
+          )
       );
 
       break;
@@ -967,7 +1432,12 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          a.year - b.year
+          (
+            Number(a.year) || 0
+          ) -
+          (
+            Number(b.year) || 0
+          )
       );
 
       break;
@@ -977,10 +1447,11 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          a.title.localeCompare(
-            b.title,
-            "ko"
-          )
+          String(a.title || "")
+            .localeCompare(
+              String(b.title || ""),
+              "ko"
+            )
       );
 
       break;
@@ -992,8 +1463,14 @@ function sortMovies(movieList) {
 
       sorted.sort(
         (a, b) =>
-          (getOverallRating(b) ?? 0) -
-          (getOverallRating(a) ?? 0)
+          (
+            getOverallRating(b)
+            ?? 0
+          ) -
+          (
+            getOverallRating(a)
+            ?? 0
+          )
       );
 
       break;
@@ -1020,6 +1497,7 @@ function updateMovies() {
 
   currentPage = 1;
 
+
   renderMovies();
 
 }
@@ -1030,6 +1508,13 @@ function updateMovies() {
 ===================================================== */
 
 function renderMovies() {
+
+  if (!movieGrid) {
+
+    return;
+
+  }
+
 
   const visibleCount =
     currentPage *
@@ -1047,7 +1532,10 @@ function renderMovies() {
 
 
   visibleMovies.forEach(
-    (movie, index) => {
+    (
+      movie,
+      index
+    ) => {
 
       const card =
         createMovieCard(
@@ -1055,20 +1543,31 @@ function renderMovies() {
           index
         );
 
-      movieGrid.appendChild(card);
+
+      movieGrid.appendChild(
+        card
+      );
 
     }
   );
 
 
-  resultCount.textContent =
-    currentMovies.length;
+  if (resultCount) {
+
+    resultCount.textContent =
+      currentMovies.length;
+
+  }
 
 
-  emptyMessage.classList.toggle(
-    "hidden",
-    currentMovies.length > 0
-  );
+  if (emptyMessage) {
+
+    emptyMessage.classList.toggle(
+      "hidden",
+      currentMovies.length > 0
+    );
+
+  }
 
 
   const hasMore =
@@ -1076,10 +1575,14 @@ function renderMovies() {
     currentMovies.length;
 
 
-  loadMoreButton.classList.toggle(
-    "hidden",
-    !hasMore
-  );
+  if (loadMoreButton) {
+
+    loadMoreButton.classList.toggle(
+      "hidden",
+      !hasMore
+    );
+
+  }
 
 }
 
@@ -1088,20 +1591,34 @@ function renderMovies() {
    MOVIE CARD
 ===================================================== */
 
-function createMovieCard(movie, index) {
+function createMovieCard(
+  movie,
+  index
+) {
 
   const card =
-    document.createElement("article");
+    document.createElement(
+      "article"
+    );
+
 
   card.className =
     "movie-card";
 
+
   card.style.animationDelay =
-    `${Math.min(index, 15) * 0.025}s`;
+    `${
+      Math.min(
+        index,
+        15
+      ) * 0.025
+    }s`;
 
 
   const overall =
-    getOverallRating(movie);
+    getOverallRating(
+      movie
+    );
 
 
   const scoreText =
@@ -1145,7 +1662,7 @@ function createMovieCard(movie, index) {
       <div class="movie-meta">
 
         <span>
-          ${movie.year}
+          ${escapeHTML(movie.year)}
         </span>
 
         <span class="movie-score">
@@ -1161,7 +1678,8 @@ function createMovieCard(movie, index) {
 
   card.addEventListener(
     "click",
-    () => openModal(movie)
+    () =>
+      openModal(movie)
   );
 
 
@@ -1174,10 +1692,22 @@ function createMovieCard(movie, index) {
    MODAL
 ===================================================== */
 
-function openModal(movie) {
+function openModal(
+  movie
+) {
+
+  if (
+    !movieModal ||
+    !modalBody
+  ) {
+
+    return;
+
+  }
+
 
   const ratings =
-    movie.ratings;
+    movie.ratings || {};
 
 
   modalBody.innerHTML = `
@@ -1202,6 +1732,7 @@ function openModal(movie) {
           ${escapeHTML(movie.title)}
         </h2>
 
+
         <p class="modal-original">
           ${escapeHTML(movie.englishTitle)}
         </p>
@@ -1210,17 +1741,20 @@ function openModal(movie) {
         <div class="modal-basic">
 
           <span class="modal-tag">
-            ${movie.year}
+            ${escapeHTML(movie.year)}
           </span>
 
-          ${movie.genre
-            .map(
-              genre =>
-                `<span class="modal-tag">
-                  ${escapeHTML(genre)}
-                </span>`
-            )
-            .join("")
+          ${
+            (movie.genre || [])
+              .map(
+                genre =>
+                  `
+                    <span class="modal-tag">
+                      ${escapeHTML(genre)}
+                    </span>
+                  `
+              )
+              .join("")
           }
 
         </div>
@@ -1234,7 +1768,8 @@ function openModal(movie) {
         <div class="modal-basic">
 
           <span class="modal-tag">
-            감독 · ${escapeHTML(movie.director)}
+            감독 ·
+            ${escapeHTML(movie.director)}
           </span>
 
         </div>
@@ -1246,35 +1781,40 @@ function openModal(movie) {
             영화 평점
           </h4>
 
+
           <div class="rating-list">
 
             ${createRatingItem(
               "IMDb",
-              ratings.imdb
+              ratings.imdb,
+              "imdb"
             )}
 
             ${createRatingItem(
               "NAVER",
-              ratings.naver
+              ratings.naver,
+              "naver"
             )}
 
             ${createRatingItem(
               "CINE21",
-              ratings.cine21
+              ratings.cine21,
+              "cine21"
             )}
 
             ${createRatingItem(
               "Rotten Tomatoes",
-              ratings.rottenTomatoes
+              ratings.rottenTomatoes,
+              "rottenTomatoes"
             )}
 
             ${createRatingItem(
               "Letterboxd",
-              ratings.letterboxd
+              ratings.letterboxd,
+              "letterboxd"
             )}
 
-            ${createRatingItem(
-              "Too Space 종합",
+            ${createOverallRatingItem(
               getOverallRating(movie)
             )}
 
@@ -1289,16 +1829,20 @@ function openModal(movie) {
             출연
           </h4>
 
+
           <div class="modal-basic">
 
-            ${movie.actors
-              .map(
-                actor =>
-                  `<span class="modal-tag">
-                    ${escapeHTML(actor)}
-                  </span>`
-              )
-              .join("")
+            ${
+              (movie.actors || [])
+                .map(
+                  actor =>
+                    `
+                      <span class="modal-tag">
+                        ${escapeHTML(actor)}
+                      </span>
+                    `
+                )
+                .join("")
             }
 
           </div>
@@ -1323,7 +1867,15 @@ function openModal(movie) {
 }
 
 
-function createRatingItem(name, value) {
+/* =====================================================
+   RATING DISPLAY
+===================================================== */
+
+function createRatingItem(
+  name,
+  value,
+  site
+) {
 
   let displayValue;
 
@@ -1334,12 +1886,53 @@ function createRatingItem(name, value) {
     value === "없음"
   ) {
 
-    displayValue = "없음";
+    displayValue =
+      "없음";
 
-  } else {
+  }
+
+  else {
 
     displayValue =
-      Number(value).toFixed(1);
+      Number(value)
+        .toFixed(1);
+
+  }
+
+
+  const normalized =
+    site
+      ? getNormalizedRating(
+          {
+            ratings: {
+              [site]: value
+            }
+          },
+          site
+        )
+      : null;
+
+
+  let normalizedText =
+    "";
+
+
+  /*
+    원래 평점 옆에
+    10점 환산값을 표시한다.
+  */
+
+  if (
+    normalized !== null &&
+    RATING_SCALES[site] !== 10
+  ) {
+
+    normalizedText =
+      `
+        <small>
+          → ${normalized.toFixed(1)}/10
+        </small>
+      `;
 
   }
 
@@ -1353,7 +1946,19 @@ function createRatingItem(name, value) {
       </span>
 
       <span class="rating-value">
+
         ${displayValue}
+
+        ${
+          value !== null &&
+          value !== undefined &&
+          value !== "없음"
+            ? ` / ${RATING_SCALES[site]}`
+            : ""
+        }
+
+        ${normalizedText}
+
       </span>
 
     </div>
@@ -1363,11 +1968,61 @@ function createRatingItem(name, value) {
 }
 
 
+/*
+  종합평점 표시
+*/
+
+function createOverallRatingItem(
+  value
+) {
+
+  const displayValue =
+    value === null
+      ? "없음"
+      : value.toFixed(1);
+
+
+  return `
+
+    <div class="rating-item">
+
+      <span class="rating-name">
+        Too Space 종합
+      </span>
+
+      <span class="rating-value">
+        ${displayValue}
+        ${
+          value !== null
+            ? " / 10"
+            : ""
+        }
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
 function closeModal() {
+
+  if (!movieModal) {
+
+    return;
+
+  }
+
 
   movieModal.classList.add(
     "hidden"
   );
+
 
   document.body.style.overflow =
     "";
@@ -1381,38 +2036,66 @@ function closeModal() {
 
 function resetFilters() {
 
-  currentGenre = "전체";
-
-  currentSearch = "";
-
-  currentSort = "popular";
-
-  currentPage = 1;
+  currentGenre =
+    "전체";
 
 
-  searchInput.value = "";
+  currentSearch =
+    "";
 
-  sortSelect.value = "popular";
+
+  currentSort =
+    "popular";
 
 
-  document
-    .querySelectorAll(
-      ".filter-button"
-    )
-    .forEach(button => {
+  currentPage =
+    1;
 
-      button.classList.toggle(
-        "active",
-        button.dataset.genre ===
-          "전체"
+
+  if (searchInput) {
+
+    searchInput.value =
+      "";
+
+  }
+
+
+  if (sortSelect) {
+
+    sortSelect.value =
+      "popular";
+
+  }
+
+
+  if (genreFilter) {
+
+    genreFilter
+      .querySelectorAll(
+        ".filter-button"
+      )
+      .forEach(
+        button => {
+
+          button.classList.toggle(
+            "active",
+            button.dataset.genre ===
+              "전체"
+          );
+
+        }
       );
 
-    });
+  }
 
 
-  clearSearch.classList.remove(
-    "show"
-  );
+  if (clearSearch) {
+
+    clearSearch.classList.remove(
+      "show"
+    );
+
+  }
 
 
   updateMovies();
@@ -1424,25 +2107,34 @@ function resetFilters() {
    SECURITY
 ===================================================== */
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
 
-  return String(value ?? "")
+  return String(
+    value ?? ""
+  )
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
@@ -1451,8 +2143,53 @@ function escapeHTML(value) {
 }
 
 
-function escapeAttribute(value) {
+function escapeAttribute(
+  value
+) {
 
-  return escapeHTML(value);
+  return escapeHTML(
+    value
+  );
 
 }
+
+
+/* =====================================================
+   DEBUG / DATA CHECK
+===================================================== */
+
+/*
+  개발 중 콘솔에서
+  영화 데이터 상태를 확인할 수 있다.
+*/
+
+function getMovieCount() {
+
+  return movies.length;
+
+}
+
+
+function getMoviesWithRating(
+  site
+) {
+
+  return movies.filter(
+    movie =>
+      getNormalizedRating(
+        movie,
+        site
+      ) !== null
+  );
+
+}
+
+
+/*
+  콘솔에서 확인:
+
+  getMovieCount()
+  getMoviesWithRating("imdb")
+  getOverallRating(movies[0])
+
+*/
