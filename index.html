@@ -1,0 +1,257 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Too Space Cinema</title>
+  <meta name="description" content="영화 정보와 평점을 한눈에 확인하는 Too Space Cinema">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="header">
+    <div class="header-inner">
+
+      <a href="#" class="logo">
+        <span class="logo-mark">TS</span>
+        <span class="logo-text">
+          <strong>TOO SPACE</strong>
+          <small>CINEMA</small>
+        </span>
+      </a>
+
+      <nav class="nav">
+        <a href="#home">홈</a>
+        <a href="#movies">영화</a>
+        <a href="#about">소개</a>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <!-- =========================
+       HERO
+  ========================== -->
+  <main id="home">
+
+    <section class="hero">
+      <div class="hero-content">
+
+        <p class="hero-small">WELCOME TO</p>
+
+        <h1>
+          TOO SPACE<br>
+          <span>CINEMA</span>
+        </h1>
+
+        <p class="hero-description">
+          좋아하는 영화를 찾고<br>
+          다양한 영화 평점을 한곳에서 확인하세요.
+        </p>
+
+        <a href="#movies" class="hero-button">
+          영화 보러가기
+        </a>
+
+      </div>
+    </section>
+
+
+    <!-- =========================
+         MOVIE SECTION
+    ========================== -->
+    <section class="movie-section" id="movies">
+
+      <div class="section-title">
+        <p>TOO SPACE CINEMA</p>
+        <h2>영화 탐색</h2>
+      </div>
+
+
+      <!-- SEARCH -->
+      <div class="search-area">
+
+        <div class="search-box">
+
+          <span class="search-icon">⌕</span>
+
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="영화 제목, 영어 제목, 별칭, 감독을 검색하세요"
+            autocomplete="off"
+          >
+
+          <button id="clearSearch" class="clear-search" aria-label="검색어 지우기">
+            ×
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- FILTER -->
+      <div class="filter-area">
+
+        <div class="genre-filter" id="genreFilter">
+          <button class="filter-button active" data-genre="전체">
+            전체
+          </button>
+        </div>
+
+        <select id="sortSelect" class="sort-select">
+          <option value="popular">인기순</option>
+          <option value="overall">종합 평점 높은순</option>
+          <option value="imdb">IMDb 높은순</option>
+          <option value="naver">NAVER 높은순</option>
+          <option value="cine21">CINE21 높은순</option>
+          <option value="rt">Rotten Tomatoes 높은순</option>
+          <option value="newest">최신순</option>
+          <option value="oldest">오래된순</option>
+          <option value="title">제목순</option>
+        </select>
+
+      </div>
+
+
+      <!-- RESULT INFO -->
+      <div class="result-info">
+
+        <div>
+          검색 결과
+          <strong id="resultCount">0</strong>편
+        </div>
+
+        <button id="resetButton" class="reset-button">
+          필터 초기화
+        </button>
+
+      </div>
+
+
+      <!-- MOVIE GRID -->
+      <div id="movieGrid" class="movie-grid">
+        <!-- JavaScript가 영화 카드를 생성 -->
+      </div>
+
+
+      <!-- EMPTY -->
+      <div id="emptyMessage" class="empty-message hidden">
+
+        <div class="empty-icon">🎬</div>
+
+        <h3>검색 결과가 없습니다.</h3>
+
+        <p>
+          다른 제목이나 영어 제목으로 검색해보세요.
+        </p>
+
+      </div>
+
+
+      <!-- LOAD MORE -->
+      <div class="load-more-area">
+
+        <button id="loadMoreButton" class="load-more-button">
+          더 많은 영화 보기
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ABOUT
+    ========================== -->
+    <section class="about-section" id="about">
+
+      <div class="about-content">
+
+        <p class="section-label">ABOUT</p>
+
+        <h2>
+          TOO SPACE<br>
+          CINEMA
+        </h2>
+
+        <p>
+          Too Space Cinema는 다양한 영화의 정보를 확인하고
+          여러 영화 평점을 비교할 수 있도록 만든 영화 정보 사이트입니다.
+        </p>
+
+        <div class="rating-notice">
+
+          <strong>평점 안내</strong>
+
+          <p>
+            영화별로 제공되는 평점이 다를 수 있습니다.
+            확인할 수 없는 평점은 <b>없음</b>으로 표시합니다.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="footer">
+
+    <div class="footer-inner">
+
+      <div>
+        <strong>TOO SPACE CINEMA</strong>
+        <p>Movie Rating & Information</p>
+      </div>
+
+      <p class="copyright">
+        © 2026 Too Space Cinema
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================
+       MOVIE MODAL
+  ========================== -->
+  <div id="movieModal" class="modal hidden">
+
+    <div class="modal-background"></div>
+
+    <div class="modal-content">
+
+      <button id="modalClose" class="modal-close">
+        ×
+      </button>
+
+      <div id="modalBody">
+        <!-- JavaScript가 상세 정보 생성 -->
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+</html>
+```
