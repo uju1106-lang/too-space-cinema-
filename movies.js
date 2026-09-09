@@ -211,5 +211,4 @@ const movies = [
       rottenTomatoes: 86,
       letterboxd: 4.3
     }
-  }
-];
+    ];
