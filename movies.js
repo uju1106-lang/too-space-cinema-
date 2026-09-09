@@ -5,16 +5,23 @@ const movies = [
     englishTitle: "The Godfather",
     year: 1972,
     director: "Francis Ford Coppola",
-    genre: "Crime, Drama",
+    genre: ["범죄", "드라마"],
     aliases: [
       "대부",
-      "godfather",
-      "the godfather"
+      "The Godfather",
+      "godfather"
     ],
+    actors: [
+      "말론 브란도",
+      "알 파치노",
+      "제임스 칸",
+      "로버트 듀발"
+    ],
+    description: "마피아 가문의 권력과 가족을 그린 범죄 드라마.",
     poster: "",
     ratings: {
       imdb: 9.2,
-      cine21: 8.67,
+      cine21: 4.34,
       rottenTomatoes: 97,
       letterboxd: 4.5
     }
@@ -26,17 +33,24 @@ const movies = [
     englishTitle: "The Godfather Part II",
     year: 1974,
     director: "Francis Ford Coppola",
-    genre: "Crime, Drama",
+    genre: ["범죄", "드라마"],
     aliases: [
       "대부2",
       "대부 2",
-      "godfather 2",
-      "the godfather part ii"
+      "The Godfather Part II",
+      "godfather part ii"
     ],
+    actors: [
+      "알 파치노",
+      "로버트 드 니로",
+      "로버트 듀발",
+      "다이앤 키튼"
+    ],
+    description: "마이클 코를레오네의 현재와 젊은 비토 코를레오네의 과거를 교차해 그린 후속작.",
     poster: "",
     ratings: {
       imdb: 9.0,
-      cine21: 9.25,
+      cine21: 4.625,
       rottenTomatoes: 96,
       letterboxd: 4.5
     }
@@ -48,12 +62,19 @@ const movies = [
     englishTitle: "The Shawshank Redemption",
     year: 1994,
     director: "Frank Darabont",
-    genre: "Drama",
+    genre: ["드라마"],
     aliases: [
       "쇼생크탈출",
-      "shawshank",
-      "the shawshank redemption"
+      "The Shawshank Redemption",
+      "Shawshank"
     ],
+    actors: [
+      "팀 로빈스",
+      "모건 프리먼",
+      "밥 건튼",
+      "윌리엄 새들러"
+    ],
+    description: "억울하게 수감된 앤디와 교도소에서 만난 레드의 우정을 그린 드라마.",
     poster: "",
     ratings: {
       imdb: 9.3,
@@ -69,16 +90,23 @@ const movies = [
     englishTitle: "The Dark Knight",
     year: 2008,
     director: "Christopher Nolan",
-    genre: "Action, Crime, Drama",
+    genre: ["액션", "범죄", "드라마"],
     aliases: [
       "다크나이트",
-      "dark knight",
-      "the dark knight"
+      "The Dark Knight",
+      "Dark Knight"
     ],
+    actors: [
+      "크리스찬 베일",
+      "히스 레저",
+      "아론 에크하트",
+      "마이클 케인"
+    ],
+    description: "배트맨과 조커의 대립을 중심으로 펼쳐지는 범죄 액션 드라마.",
     poster: "",
     ratings: {
       imdb: 9.1,
-      cine21: 8.56,
+      cine21: 4.28,
       rottenTomatoes: 94,
       letterboxd: 4.4
     }
@@ -90,11 +118,18 @@ const movies = [
     englishTitle: "Pulp Fiction",
     year: 1994,
     director: "Quentin Tarantino",
-    genre: "Crime, Drama",
+    genre: ["범죄", "드라마", "코미디"],
     aliases: [
       "펄프픽션",
-      "pulp fiction"
+      "Pulp Fiction"
     ],
+    actors: [
+      "존 트라볼타",
+      "사무엘 L. 잭슨",
+      "우마 서먼",
+      "브루스 윌리스"
+    ],
+    description: "서로 얽히고설킨 여러 인물들의 이야기를 독특한 시간 구조로 풀어낸 범죄 영화.",
     poster: "",
     ratings: {
       imdb: 8.8,
@@ -110,18 +145,25 @@ const movies = [
     englishTitle: "The Lord of the Rings: The Return of the King",
     year: 2003,
     director: "Peter Jackson",
-    genre: "Adventure, Fantasy, Drama",
+    genre: ["판타지", "모험", "드라마"],
     aliases: [
-      "반지의제왕 왕의귀환",
       "왕의 귀환",
       "왕의귀환",
-      "lotr return of the king",
-      "return of the king"
+      "반지의제왕 왕의귀환",
+      "The Return of the King",
+      "Return of the King"
     ],
+    actors: [
+      "일라이저 우드",
+      "비고 모텐슨",
+      "이안 맥켈런",
+      "숀 애스틴"
+    ],
+    description: "반지 원정대의 마지막 여정을 그린 반지의 제왕 3부작의 마지막 작품.",
     poster: "",
     ratings: {
       imdb: 9.0,
-      cine21: 8.33,
+      cine21: 4.165,
       rottenTomatoes: 94,
       letterboxd: 4.4
     }
@@ -133,18 +175,24 @@ const movies = [
     englishTitle: "The Lord of the Rings: The Two Towers",
     year: 2002,
     director: "Peter Jackson",
-    genre: "Adventure, Fantasy, Drama",
+    genre: ["판타지", "모험", "드라마"],
     aliases: [
-      "반지의제왕 두개의탑",
       "두 개의 탑",
       "두개의탑",
-      "lotr two towers",
-      "the two towers"
+      "반지의제왕 두개의탑",
+      "The Two Towers"
     ],
+    actors: [
+      "일라이저 우드",
+      "비고 모텐슨",
+      "이안 맥켈런",
+      "올랜도 블룸"
+    ],
+    description: "사우론의 위협에 맞서 각자의 길을 걷게 된 인물들의 이야기를 그린 두 번째 작품.",
     poster: "",
     ratings: {
       imdb: 8.8,
-      cine21: 7.67,
+      cine21: 3.835,
       rottenTomatoes: 95,
       letterboxd: 4.3
     }
@@ -156,14 +204,21 @@ const movies = [
     englishTitle: "The Lord of the Rings: The Fellowship of the Ring",
     year: 2001,
     director: "Peter Jackson",
-    genre: "Adventure, Fantasy, Drama",
+    genre: ["판타지", "모험", "드라마"],
     aliases: [
-      "반지의제왕 반지원정대",
       "반지 원정대",
       "반지원정대",
-      "lotr fellowship",
-      "the fellowship of the ring"
+      "반지의제왕 반지원정대",
+      "The Fellowship of the Ring",
+      "Fellowship"
     ],
+    actors: [
+      "일라이저 우드",
+      "이안 맥켈런",
+      "비고 모텐슨",
+      "숀 애스틴"
+    ],
+    description: "절대반지를 파괴하기 위해 결성된 원정대의 여정을 그린 첫 번째 작품.",
     poster: "",
     ratings: {
       imdb: 8.9,
@@ -179,11 +234,18 @@ const movies = [
     englishTitle: "Forrest Gump",
     year: 1994,
     director: "Robert Zemeckis",
-    genre: "Drama, Romance",
+    genre: ["드라마", "로맨스", "코미디"],
     aliases: [
       "포레스트검프",
-      "forrest gump"
+      "Forrest Gump"
     ],
+    actors: [
+      "톰 행크스",
+      "로빈 라이트",
+      "게리 시니스",
+      "샐리 필드"
+    ],
+    description: "포레스트 검프라는 한 남자의 삶을 통해 미국 현대사의 여러 순간을 그린 드라마.",
     poster: "",
     ratings: {
       imdb: 8.8,
@@ -199,16 +261,24 @@ const movies = [
     englishTitle: "Inception",
     year: 2010,
     director: "Christopher Nolan",
-    genre: "Action, Sci-Fi, Thriller",
+    genre: ["액션", "SF", "스릴러"],
     aliases: [
       "인셉션",
-      "inception"
+      "Inception"
     ],
+    actors: [
+      "레오나르도 디카프리오",
+      "조셉 고든 레빗",
+      "엘리엇 페이지",
+      "톰 하디"
+    ],
+    description: "꿈속에 들어가 생각을 훔치거나 심는 기술을 둘러싼 SF 스릴러.",
     poster: "",
     ratings: {
       imdb: 8.8,
-      cine21: 7.75,
+      cine21: 3.875,
       rottenTomatoes: 86,
       letterboxd: 4.3
     }
-    ];
+  }
+];
