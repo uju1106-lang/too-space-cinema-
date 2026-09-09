@@ -14,6 +14,8 @@
    - 평점 만점 자동 환산
    - 없음 평점 자동 제외
    - 종합 평점 10점 만점 통일
+   - 포스터 자동 보완
+   - 영화 데이터 자동 검증
 
 ===================================================== */
 
@@ -22,7 +24,15 @@
    MOVIE DATABASE
 ===================================================== */
 
+/*
+  movies.js가 먼저 로드되어 있어야 합니다.
+  index.html에서
 
+  <script src="movies.js"></script>
+  <script src="script.js"></script>
+
+  순서인지 확인하세요.
+*/
 
 
 /* =====================================================
@@ -43,6 +53,170 @@ let currentSort = "popular";
 
 
 /* =====================================================
+   POSTER SYSTEM
+===================================================== */
+
+/*
+  movies.js에서 poster가 비어 있는 영화의 경우
+  Wikipedia REST API에서 포스터 이미지를 자동으로 찾는다.
+
+  이미 poster가 있는 영화는 다시 요청하지 않는다.
+*/
+
+const POSTER_CACHE = new Map();
+
+
+async function fetchWikipediaPoster(title) {
+
+  if (!title) {
+    return "";
+  }
+
+
+  if (POSTER_CACHE.has(title)) {
+    return POSTER_CACHE.get(title);
+  }
+
+
+  try {
+
+    const apiUrl =
+      "https://en.wikipedia.org/api/rest_v1/page/summary/" +
+      encodeURIComponent(
+        title.replace(/\s+/g, "_")
+      );
+
+
+    const response =
+      await fetch(apiUrl);
+
+
+    if (!response.ok) {
+
+      POSTER_CACHE.set(
+        title,
+        ""
+      );
+
+      return "";
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    const poster =
+      data.thumbnail?.source ||
+      data.originalimage?.source ||
+      "";
+
+
+    POSTER_CACHE.set(
+      title,
+      poster
+    );
+
+
+    return poster;
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      "포스터 불러오기 실패:",
+      title,
+      error
+    );
+
+
+    POSTER_CACHE.set(
+      title,
+      ""
+    );
+
+
+    return "";
+
+  }
+
+}
+
+
+/*
+  포스터가 없는 영화의 포스터를 찾는다.
+*/
+
+async function resolvePosters() {
+
+  if (
+    typeof movies === "undefined" ||
+    !Array.isArray(movies)
+  ) {
+
+    return;
+
+  }
+
+
+  await Promise.all(
+
+    movies.map(
+      async movie => {
+
+        if (
+          movie.poster &&
+          String(movie.poster).trim() !== ""
+        ) {
+
+          return;
+
+        }
+
+
+        const candidates = [
+
+          movie.englishTitle,
+
+          `${movie.englishTitle} film`,
+
+          movie.title
+
+        ];
+
+
+        for (
+          const title of candidates
+        ) {
+
+          const poster =
+            await fetchWikipediaPoster(
+              title
+            );
+
+
+          if (poster) {
+
+            movie.poster =
+              poster;
+
+            break;
+
+          }
+
+        }
+
+      }
+    )
+
+  );
+
+}
+
+
+/* =====================================================
    RATING SYSTEM
 ===================================================== */
 
@@ -52,26 +226,25 @@ let currentSort = "popular";
   IMDb
   10점 → 그대로
 
-  NAVER
-  10점 → 그대로
-
   CINE21
-  5점 → ×2
+  10점 → 그대로
 
   Letterboxd
   5점 → ×2
 
   Rotten Tomatoes
   100점 → ÷10
+
+  NAVER
+  완전히 제거
 */
+
 
 const RATING_SCALES = {
 
   imdb: 10,
 
-  naver: 10,
-
-  cine21: 5,
+  cine21: 10,
 
   rottenTomatoes: 100,
 
@@ -87,8 +260,6 @@ const RATING_SCALES = {
 const RATING_NAMES = {
 
   imdb: "IMDb",
-
-  naver: "NAVER",
 
   cine21: "CINE21",
 
@@ -169,7 +340,8 @@ function convertRatingToTen(
 
   if (scale === 10) {
 
-    converted = number;
+    converted =
+      number;
 
   }
 
@@ -233,7 +405,7 @@ function getNormalizedRating(
 /*
   종합 평점 계산
 
-  중요:
+  - NAVER 제외
   - 없음 제외
   - 각 사이트를 10점으로 변환
   - 실제 존재하는 평점만 평균
@@ -242,25 +414,33 @@ function getNormalizedRating(
 function getOverallRating(movie) {
 
   const sites = [
+
     "imdb",
-    "naver",
+
     "cine21",
+
     "rottenTomatoes",
+
     "letterboxd"
+
   ];
 
 
-  const ratings = sites
-    .map(site =>
-      getNormalizedRating(
-        movie,
-        site
+  const ratings =
+    sites
+
+      .map(
+        site =>
+          getNormalizedRating(
+            movie,
+            site
+          )
       )
-    )
-    .filter(
-      value =>
-        value !== null
-    );
+
+      .filter(
+        value =>
+          value !== null
+      );
 
 
   if (!ratings.length) {
@@ -275,7 +455,8 @@ function getOverallRating(movie) {
       (
         total,
         value
-      ) => total + value,
+      ) =>
+        total + value,
       0
     );
 
@@ -300,55 +481,66 @@ const movieGrid =
     "movieGrid"
   );
 
+
 const searchInput =
   document.getElementById(
     "searchInput"
   );
+
 
 const clearSearch =
   document.getElementById(
     "clearSearch"
   );
 
+
 const genreFilter =
   document.getElementById(
     "genreFilter"
   );
+
 
 const sortSelect =
   document.getElementById(
     "sortSelect"
   );
 
+
 const resultCount =
   document.getElementById(
     "resultCount"
   );
+
 
 const emptyMessage =
   document.getElementById(
     "emptyMessage"
   );
 
+
 const resetButton =
   document.getElementById(
     "resetButton"
   );
+
 
 const loadMoreButton =
   document.getElementById(
     "loadMoreButton"
   );
 
+
 const movieModal =
   document.getElementById(
     "movieModal"
   );
 
+
 const modalBody =
   document.getElementById(
     "modalBody"
   );
+
 
 const modalClose =
   document.getElementById(
@@ -362,13 +554,27 @@ const modalClose =
 
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  async () => {
+
+    /*
+      포스터 자동 보완을 먼저 실행
+    */
+
+    await resolvePosters();
+
 
     createGenreButtons();
 
     updateMovies();
 
     setupEvents();
+
+
+    /*
+      영화 데이터 검증
+    */
+
+    validateMovieData();
 
   }
 );
@@ -396,17 +602,31 @@ function setupEvents() {
       "click",
       () => {
 
-        searchInput.value = "";
+        if (searchInput) {
 
-        currentSearch = "";
+          searchInput.value =
+            "";
+
+        }
+
+
+        currentSearch =
+          "";
+
 
         clearSearch.classList.remove(
           "show"
         );
 
+
         updateMovies();
 
-        searchInput.focus();
+
+        if (searchInput) {
+
+          searchInput.focus();
+
+        }
 
       }
     );
@@ -423,7 +643,10 @@ function setupEvents() {
         currentSort =
           sortSelect.value;
 
-        currentPage = 1;
+
+        currentPage =
+          1;
+
 
         updateMovies();
 
@@ -513,9 +736,17 @@ function setupEvents() {
 
 function normalizeText(text) {
 
-  return String(text || "")
+  return String(
+    text || ""
+  )
+
     .toLowerCase()
-    .replace(/\s+/g, "")
+
+    .replace(
+      /\s+/g,
+      ""
+    )
+
     .replace(
       /[^\p{L}\p{N}]/gu,
       ""
@@ -530,7 +761,8 @@ function handleSearch(event) {
     event.target.value.trim();
 
 
-  currentPage = 1;
+  currentPage =
+    1;
 
 
   if (clearSearch) {
@@ -627,11 +859,6 @@ function createGenreButtons() {
   );
 
 
-  /*
-    기존 버튼이 있으면
-    중복 생성 방지
-  */
-
   const existingButtons =
     genreFilter.querySelectorAll(
       ".filter-button"
@@ -643,9 +870,11 @@ function createGenreButtons() {
   ) {
 
     genreFilter
+
       .querySelectorAll(
         ".filter-button:not([data-genre='전체'])"
       )
+
       .forEach(
         button =>
           button.remove()
@@ -655,6 +884,7 @@ function createGenreButtons() {
 
 
   [...genres]
+
     .sort(
       (a, b) =>
         a.localeCompare(
@@ -662,6 +892,7 @@ function createGenreButtons() {
           "ko"
         )
     )
+
     .forEach(
       genre => {
 
@@ -670,14 +901,18 @@ function createGenreButtons() {
             "button"
           );
 
+
         button.className =
           "filter-button";
+
 
         button.dataset.genre =
           genre;
 
+
         button.textContent =
           genre;
+
 
         genreFilter.appendChild(
           button
@@ -686,10 +921,6 @@ function createGenreButtons() {
       }
     );
 
-
-  /*
-    전체 버튼이 없다면 생성
-  */
 
   let allButton =
     genreFilter.querySelector(
@@ -704,14 +935,18 @@ function createGenreButtons() {
         "button"
       );
 
+
     allButton.className =
       "filter-button";
+
 
     allButton.dataset.genre =
       "전체";
 
+
     allButton.textContent =
       "전체";
+
 
     genreFilter.prepend(
       allButton
@@ -720,14 +955,12 @@ function createGenreButtons() {
   }
 
 
-  /*
-    전체를 기본 활성화
-  */
-
   genreFilter
+
     .querySelectorAll(
       ".filter-button"
     )
+
     .forEach(
       button => {
 
@@ -741,51 +974,69 @@ function createGenreButtons() {
     );
 
 
-  genreFilter.addEventListener(
-    "click",
-    event => {
+  /*
+    기존에 이벤트가 중복 등록되는 것을
+    막기 위해 한 번만 등록한다.
+  */
 
-      const button =
-        event.target.closest(
-          ".filter-button"
+  if (
+    !genreFilter.dataset.initialized
+  ) {
+
+    genreFilter.dataset.initialized =
+      "true";
+
+
+    genreFilter.addEventListener(
+      "click",
+      event => {
+
+        const button =
+          event.target.closest(
+            ".filter-button"
+          );
+
+
+        if (!button) {
+
+          return;
+
+        }
+
+
+        genreFilter
+
+          .querySelectorAll(
+            ".filter-button"
+          )
+
+          .forEach(
+            btn =>
+              btn.classList.remove(
+                "active"
+              )
+          );
+
+
+        button.classList.add(
+          "active"
         );
 
 
-      if (!button) {
+        currentGenre =
+          button.dataset.genre;
 
-        return;
+
+        currentPage =
+          1;
+
+
+        updateMovies();
 
       }
+    );
 
-
-      genreFilter
-        .querySelectorAll(
-          ".filter-button"
-        )
-        .forEach(
-          btn =>
-            btn.classList.remove(
-              "active"
-            )
-        );
-
-
-      button.classList.add(
-        "active"
-      );
-
-
-      currentGenre =
-        button.dataset.genre;
-
-
-      currentPage = 1;
-
-
-      updateMovies();
-
-    }
-  );
+  }
 
 }
 
@@ -883,27 +1134,9 @@ function sortMovies(
       break;
 
 
-    case "naver":
-
-      sorted.sort(
-        (a, b) =>
-          (
-            getNormalizedRating(
-              b,
-              "naver"
-            )
-            ?? -1
-          ) -
-          (
-            getNormalizedRating(
-              a,
-              "naver"
-            )
-            ?? -1
-          )
-      );
-
-      break;
+    /*
+      NAVER 정렬 완전 삭제
+    */
 
 
     case "cine21":
@@ -1057,7 +1290,8 @@ function updateMovies() {
     );
 
 
-  currentPage = 1;
+  currentPage =
+    1;
 
 
   renderMovies();
@@ -1090,7 +1324,8 @@ function renderMovies() {
     );
 
 
-  movieGrid.innerHTML = "";
+  movieGrid.innerHTML =
+    "";
 
 
   visibleMovies.forEach(
@@ -1189,12 +1424,16 @@ function createMovieCard(
       : "없음";
 
 
+  const poster =
+    movie.poster || "";
+
+
   card.innerHTML = `
 
     <div class="poster-wrapper">
 
       <img
-        src="${escapeAttribute(movie.poster)}"
+        src="${escapeAttribute(poster)}"
         alt="${escapeAttribute(movie.title)} 포스터"
         loading="lazy"
         onerror="this.style.display='none'"
@@ -1217,15 +1456,18 @@ function createMovieCard(
         ${escapeHTML(movie.title)}
       </h3>
 
+
       <p class="movie-original">
         ${escapeHTML(movie.englishTitle)}
       </p>
+
 
       <div class="movie-meta">
 
         <span>
           ${escapeHTML(movie.year)}
         </span>
+
 
         <span class="movie-score">
           ★ ${scoreText}
@@ -1280,7 +1522,7 @@ function openModal(
 
         <img
           class="modal-poster"
-          src="${escapeAttribute(movie.poster)}"
+          src="${escapeAttribute(movie.poster || "")}"
           alt="${escapeAttribute(movie.title)} 포스터"
           onerror="this.style.display='none'"
         >
@@ -1305,6 +1547,7 @@ function openModal(
           <span class="modal-tag">
             ${escapeHTML(movie.year)}
           </span>
+
 
           ${
             (movie.genre || [])
@@ -1352,11 +1595,6 @@ function openModal(
               "imdb"
             )}
 
-            ${createRatingItem(
-              "NAVER",
-              ratings.naver,
-              "naver"
-            )}
 
             ${createRatingItem(
               "CINE21",
@@ -1364,17 +1602,20 @@ function openModal(
               "cine21"
             )}
 
+
             ${createRatingItem(
               "Rotten Tomatoes",
               ratings.rottenTomatoes,
               "rottenTomatoes"
             )}
 
+
             ${createRatingItem(
               "Letterboxd",
               ratings.letterboxd,
               "letterboxd"
             )}
+
 
             ${createOverallRatingItem(
               getOverallRating(movie)
@@ -1507,9 +1748,11 @@ function createRatingItem(
         ${escapeHTML(name)}
       </span>
 
+
       <span class="rating-value">
 
         ${displayValue}
+
 
         ${
           value !== null &&
@@ -1518,6 +1761,7 @@ function createRatingItem(
             ? ` / ${RATING_SCALES[site]}`
             : ""
         }
+
 
         ${normalizedText}
 
@@ -1530,9 +1774,9 @@ function createRatingItem(
 }
 
 
-/*
-  종합평점 표시
-*/
+/* =====================================================
+   OVERALL RATING DISPLAY
+===================================================== */
 
 function createOverallRatingItem(
   value
@@ -1552,13 +1796,18 @@ function createOverallRatingItem(
         Too Space 종합
       </span>
 
+
       <span class="rating-value">
+
         ${displayValue}
+
+
         ${
           value !== null
             ? " / 10"
             : ""
         }
+
       </span>
 
     </div>
@@ -1633,9 +1882,11 @@ function resetFilters() {
   if (genreFilter) {
 
     genreFilter
+
       .querySelectorAll(
         ".filter-button"
       )
+
       .forEach(
         button => {
 
@@ -1717,13 +1968,278 @@ function escapeAttribute(
 
 
 /* =====================================================
-   DEBUG / DATA CHECK
+   DATA VALIDATION
 ===================================================== */
 
-/*
-  개발 중 콘솔에서
-  영화 데이터 상태를 확인할 수 있다.
-*/
+function validateMovieData() {
+
+  if (
+    typeof movies === "undefined" ||
+    !Array.isArray(movies)
+  ) {
+
+    console.error(
+      "❌ movies.js의 movies 배열을 찾을 수 없습니다."
+    );
+
+    return;
+
+  }
+
+
+  const errors = [];
+
+
+  /* ---------------------------------------------
+     1. 영화 개수
+  --------------------------------------------- */
+
+  if (
+    movies.length !== 100
+  ) {
+
+    errors.push(
+      `영화 개수 오류: ${movies.length}편`
+    );
+
+  }
+
+
+  /* ---------------------------------------------
+     2. ID 1~100 연속 여부
+  --------------------------------------------- */
+
+  movies.forEach(
+    (
+      movie,
+      index
+    ) => {
+
+      if (
+        movie.id !== index + 1
+      ) {
+
+        errors.push(
+          `ID 오류: ${index + 1}번째 영화의 실제 ID가 ${movie.id}`
+        );
+
+      }
+
+    }
+  );
+
+
+  /* ---------------------------------------------
+     3. 한국 제목 중복
+  --------------------------------------------- */
+
+  const koreanTitles =
+    movies.map(
+      movie =>
+        String(
+          movie.title || ""
+        )
+          .trim()
+          .toLowerCase()
+    );
+
+
+  const duplicateKoreanTitles =
+    koreanTitles.filter(
+      (
+        title,
+        index
+      ) =>
+        title &&
+        koreanTitles.indexOf(title) !== index
+    );
+
+
+  if (
+    duplicateKoreanTitles.length
+  ) {
+
+    errors.push(
+      `한국 제목 중복: ${
+        [
+          ...new Set(
+            duplicateKoreanTitles
+          )
+        ].join(", ")
+      }`
+    );
+
+  }
+
+
+  /* ---------------------------------------------
+     4. 영어 제목 중복
+  --------------------------------------------- */
+
+  const englishTitles =
+    movies.map(
+      movie =>
+        String(
+          movie.englishTitle || ""
+        )
+          .trim()
+          .toLowerCase()
+    );
+
+
+  const duplicateEnglishTitles =
+    englishTitles.filter(
+      (
+        title,
+        index
+      ) =>
+        title &&
+        englishTitles.indexOf(title) !== index
+    );
+
+
+  if (
+    duplicateEnglishTitles.length
+  ) {
+
+    errors.push(
+      `영어 제목 중복: ${
+        [
+          ...new Set(
+            duplicateEnglishTitles
+          )
+        ].join(", ")
+      }`
+    );
+
+  }
+
+
+  /* ---------------------------------------------
+     5. 필수 데이터
+  --------------------------------------------- */
+
+  movies.forEach(
+    movie => {
+
+      if (!movie.title) {
+
+        errors.push(
+          `한국 제목 없음: ID ${movie.id}`
+        );
+
+      }
+
+
+      if (!movie.englishTitle) {
+
+        errors.push(
+          `영어 제목 없음: ID ${movie.id}`
+        );
+
+      }
+
+
+      if (!movie.year) {
+
+        errors.push(
+          `개봉년도 없음: ID ${movie.id}`
+        );
+
+      }
+
+
+      if (!movie.ratings) {
+
+        errors.push(
+          `평점 데이터 없음: ID ${movie.id}`
+        );
+
+      }
+
+    }
+  );
+
+
+  /* ---------------------------------------------
+     6. NAVER 완전 제거 확인
+  --------------------------------------------- */
+
+  const movieDataText =
+    JSON.stringify(
+      movies
+    ).toLowerCase();
+
+
+  if (
+    movieDataText.includes(
+      "naver"
+    )
+  ) {
+
+    errors.push(
+      "movies.js에 NAVER 데이터가 남아 있습니다."
+    );
+
+  }
+
+
+  /* ---------------------------------------------
+     7. 포스터 확인
+  --------------------------------------------- */
+
+  const missingPosters =
+    movies.filter(
+      movie =>
+        !movie.poster ||
+        String(movie.poster).trim() === ""
+    );
+
+
+  if (
+    missingPosters.length
+  ) {
+
+    console.warn(
+      "⚠️ 포스터를 아직 찾지 못한 영화:",
+      missingPosters.map(
+        movie =>
+          `${movie.id}: ${movie.title}`
+      )
+    );
+
+  }
+
+
+  /* ---------------------------------------------
+     8. 결과
+  --------------------------------------------- */
+
+  if (
+    errors.length === 0
+  ) {
+
+    console.log(
+      "✅ Too Space Cinema 데이터 검증 완료: 오류 없음"
+    );
+
+  }
+
+  else {
+
+    console.error(
+      "❌ Too Space Cinema 데이터 검증 오류:",
+      errors
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   DEBUG
+===================================================== */
 
 function getMovieCount() {
 
@@ -1751,7 +2267,15 @@ function getMoviesWithRating(
   콘솔에서 확인:
 
   getMovieCount()
+
   getMoviesWithRating("imdb")
+
+  getMoviesWithRating("cine21")
+
+  getMoviesWithRating("rottenTomatoes")
+
+  getMoviesWithRating("letterboxd")
+
   getOverallRating(movies[0])
 
 */
