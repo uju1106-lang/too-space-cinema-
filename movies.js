@@ -295,7 +295,8 @@ const movies = [
       "요리에 대한 꿈을 가진 생쥐가 요리사와 함께 자신의 꿈을 이루어가는 애니메이션."
     
   },
-    {
+  
+  {
     id: 11,
     title: "양들의 침묵",
     englishTitle: "The Silence of the Lambs",
@@ -1148,4 +1149,4 @@ const movies = [
     description:
       "남북전쟁을 배경으로 서로 다른 목적을 가진 세 명의 인물이 숨겨진 금을 찾아 나서는 서부극."
   }
-}:
+};
