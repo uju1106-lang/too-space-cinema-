@@ -1,478 +1,291 @@
 const movies = [
   {
     id: 1,
-    title: "대부",
-    englishTitle: "The Godfather",
-    year: 1972,
-    director: "Francis Ford Coppola",
-    genre: ["범죄", "드라마"],
-    aliases: ["대부", "The Godfather", "Godfather"],
-    actors: ["말론 브란도", "알 파치노", "제임스 칸", "로버트 듀발"],
-    description: "마피아 가문의 권력과 가족을 그린 범죄 드라마.",
+    title: "12명의 성난 사람들",
+    englishTitle: "12 Angry Men",
+    year: 1957,
+    genre: ["드라마", "범죄"],
+    aliases: [
+      "12명의 성난 사람들",
+      "12 Angry Men",
+      "Twelve Angry Men",
+      "12명의 성난 남자들"
+    ],
+    director: "시드니 루멧",
+    actors: [
+      "헨리 폰다",
+      "리 J. 콥",
+      "에드 베글리",
+      "잭 클러그먼"
+    ],
     poster: "",
     ratings: {
-      imdb: 9.2,
-      cine21: 8.67,
-      rottenTomatoes: 97,
-      letterboxd: 4.5
-    }
+      imdb: 9.0,
+      cine21: 9.11,
+      rottenTomatoes: 9.7,
+      letterboxd: 4.6
+    },
+    description:
+      "한 배심원의 문제 제기를 계기로 사건의 진실을 다시 살펴보게 되는 법정 드라마."
   },
 
   {
     id: 2,
-    title: "대부 2",
-    englishTitle: "The Godfather Part II",
-    year: 1974,
-    director: "Francis Ford Coppola",
-    genre: ["범죄", "드라마"],
-    aliases: ["대부2", "대부 2", "The Godfather Part II", "Godfather Part II"],
-    actors: ["알 파치노", "로버트 드 니로", "로버트 듀발", "다이앤 키튼"],
-    description: "마이클 코를레오네의 현재와 젊은 비토 코를레오네의 과거를 교차해 그린 작품.",
+    title: "세븐",
+    englishTitle: "Se7en",
+    year: 1995,
+    genre: ["범죄", "스릴러", "미스터리"],
+    aliases: [
+      "세븐",
+      "Se7en",
+      "Seven"
+    ],
+    director: "데이비드 핀처",
+    actors: [
+      "브래드 피트",
+      "모건 프리먼",
+      "기네스 팰트로",
+      "케빈 스페이시"
+    ],
     poster: "",
     ratings: {
-      imdb: 9.0,
-      cine21: 9.25,
-      rottenTomatoes: 96,
-      letterboxd: 4.5
-    }
+      imdb: 8.6,
+      cine21: 8.54,
+      rottenTomatoes: 9.5,
+      letterboxd: 4.3
+    },
+    description:
+      "두 형사가 연쇄적으로 발생하는 사건을 추적하며 범인의 정체에 접근하는 범죄 스릴러."
   },
 
   {
     id: 3,
-    title: "쇼생크 탈출",
-    englishTitle: "The Shawshank Redemption",
+    title: "레옹",
+    englishTitle: "Léon: The Professional",
     year: 1994,
-    director: "Frank Darabont",
-    genre: ["드라마"],
-    aliases: ["쇼생크탈출", "The Shawshank Redemption", "Shawshank"],
-    actors: ["팀 로빈스", "모건 프리먼", "밥 건튼", "윌리엄 새들러"],
-    description: "억울하게 수감된 앤디와 교도소에서 만난 레드의 우정을 그린 드라마.",
+    genre: ["액션", "범죄", "드라마"],
+    aliases: [
+      "레옹",
+      "Léon: The Professional",
+      "Leon",
+      "The Professional",
+      "레옹: 더 프로페셔널"
+    ],
+    director: "뤽 베송",
+    actors: [
+      "장 르노",
+      "나탈리 포트만",
+      "게리 올드만",
+      "대니 아이엘로"
+    ],
     poster: "",
     ratings: {
-      imdb: 9.3,
-      cine21: "없음",
-      rottenTomatoes: 89,
-      letterboxd: 4.6
-    }
+      imdb: 8.5,
+      cine21: 8.63,
+      rottenTomatoes: 9.5,
+      letterboxd: 4.0
+    },
+    description:
+      "고독한 청부업자와 한 소녀의 만남을 중심으로 펼쳐지는 액션 드라마."
   },
 
   {
     id: 4,
-    title: "다크 나이트",
-    englishTitle: "The Dark Knight",
-    year: 2008,
-    director: "Christopher Nolan",
-    genre: ["액션", "범죄", "드라마"],
-    aliases: ["다크나이트", "The Dark Knight", "Dark Knight"],
-    actors: ["크리스찬 베일", "히스 레저", "아론 에크하트", "마이클 케인"],
-    description: "배트맨과 조커의 대립을 중심으로 펼쳐지는 범죄 액션 드라마.",
+    title: "피아니스트",
+    englishTitle: "The Pianist",
+    year: 2002,
+    genre: ["드라마", "전쟁", "역사"],
+    aliases: [
+      "피아니스트",
+      "The Pianist"
+    ],
+    director: "로만 폴란스키",
+    actors: [
+      "애드리언 브로디",
+      "토마스 크레취만",
+      "프랭크 핀레이",
+      "에밀리아 폭스"
+    ],
     poster: "",
     ratings: {
-      imdb: 9.1,
-      cine21: 8.56,
-      rottenTomatoes: 94,
+      imdb: 8.5,
+      cine21: 7.95,
+      rottenTomatoes: 9.6,
       letterboxd: 4.4
-    }
+    },
+    description:
+      "전쟁 속에서 살아남기 위해 고군분투하는 피아니스트의 삶을 그린 역사 드라마."
   },
 
   {
     id: 5,
-    title: "펄프 픽션",
-    englishTitle: "Pulp Fiction",
-    year: 1994,
-    director: "Quentin Tarantino",
-    genre: ["범죄", "드라마", "코미디"],
-    aliases: ["펄프픽션", "Pulp Fiction"],
-    actors: ["존 트라볼타", "사무엘 L. 잭슨", "우마 서먼", "브루스 윌리스"],
-    description: "서로 얽히고설킨 인물들의 이야기를 독특한 시간 구조로 풀어낸 범죄 영화.",
+    title: "소셜 네트워크",
+    englishTitle: "The Social Network",
+    year: 2010,
+    genre: ["드라마", "전기"],
+    aliases: [
+      "소셜 네트워크",
+      "The Social Network",
+      "Social Network"
+    ],
+    director: "데이비드 핀처",
+    actors: [
+      "제시 아이젠버그",
+      "앤드루 가필드",
+      "저스틴 팀버레이크",
+      "아미 해머"
+    ],
     poster: "",
     ratings: {
-      imdb: 8.8,
-      cine21: "없음",
-      rottenTomatoes: 92,
-      letterboxd: 4.3
-    }
+      imdb: 7.8,
+      cine21: 8.02,
+      rottenTomatoes: 8.7,
+      letterboxd: 4.0
+    },
+    description:
+      "세계적인 소셜 네트워크 서비스의 탄생과 그 과정에서 벌어진 갈등을 그린 드라마."
   },
 
   {
     id: 6,
-    title: "반지의 제왕: 왕의 귀환",
-    englishTitle: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-    director: "Peter Jackson",
-    genre: ["판타지", "모험", "드라마"],
+    title: "노인을 위한 나라는 없다",
+    englishTitle: "No Country for Old Men",
+    year: 2007,
+    genre: ["범죄", "드라마", "스릴러"],
     aliases: [
-      "왕의 귀환",
-      "왕의귀환",
-      "반지의제왕 왕의귀환",
-      "The Return of the King",
-      "Return of the King"
+      "노인을 위한 나라는 없다",
+      "No Country for Old Men"
     ],
-    actors: ["일라이저 우드", "비고 모텐슨", "이안 맥켈런", "숀 애스틴"],
-    description: "절대반지를 파괴하기 위한 마지막 여정을 그린 반지의 제왕 3부작의 마지막 작품.",
-    poster: "",
-    ratings: {
-      imdb: 9.0,
-      cine21: 8.33,
-      rottenTomatoes: 94,
-      letterboxd: 4.4
-    }
-  },
-
-  {
-    id: 7,
-    title: "반지의 제왕: 두 개의 탑",
-    englishTitle: "The Lord of the Rings: The Two Towers",
-    year: 2002,
-    director: "Peter Jackson",
-    genre: ["판타지", "모험", "드라마"],
-    aliases: [
-      "두 개의 탑",
-      "두개의탑",
-      "반지의제왕 두개의탑",
-      "The Two Towers"
-    ],
-    actors: ["일라이저 우드", "비고 모텐슨", "이안 맥켈런", "올랜도 블룸"],
-    description: "사우론의 위협에 맞서 각자의 길을 걷게 된 인물들의 이야기를 그린 두 번째 작품.",
-    poster: "",
-    ratings: {
-      imdb: 8.8,
-      cine21: 7.67,
-      rottenTomatoes: 95,
-      letterboxd: 4.3
-    }
-  },
-
-  {
-    id: 8,
-    title: "반지의 제왕: 반지 원정대",
-    englishTitle: "The Lord of the Rings: The Fellowship of the Ring",
-    year: 2001,
-    director: "Peter Jackson",
-    genre: ["판타지", "모험", "드라마"],
-    aliases: [
-      "반지 원정대",
-      "반지원정대",
-      "반지의제왕 반지원정대",
-      "The Fellowship of the Ring",
-      "Fellowship"
-    ],
-    actors: ["일라이저 우드", "이안 맥켈런", "비고 모텐슨", "숀 애스틴"],
-    description: "절대반지를 파괴하기 위해 결성된 원정대의 여정을 그린 첫 번째 작품.",
-    poster: "",
-    ratings: {
-      imdb: 8.9,
-      cine21: "없음",
-      rottenTomatoes: 91,
-      letterboxd: 4.3
-    }
-  },
-
-  {
-    id: 9,
-    title: "포레스트 검프",
-    englishTitle: "Forrest Gump",
-    year: 1994,
-    director: "Robert Zemeckis",
-    genre: ["드라마", "코미디", "로맨스"],
-    aliases: ["포레스트검프", "Forrest Gump"],
-    actors: ["톰 행크스", "로빈 라이트", "게리 시니스", "샐리 필드"],
-    description: "포레스트 검프라는 한 남자의 삶을 통해 미국 현대사의 여러 순간을 그린 드라마.",
-    poster: "",
-    ratings: {
-      imdb: 8.8,
-      cine21: "없음",
-      rottenTomatoes: 75,
-      letterboxd: 4.1
-    }
-  },
-
-  {
-    id: 10,
-    title: "인셉션",
-    englishTitle: "Inception",
-    year: 2010,
-    director: "Christopher Nolan",
-    genre: ["액션", "SF", "스릴러"],
-    aliases: ["인셉션", "Inception"],
-    actors: ["레오나르도 디카프리오", "조셉 고든 레빗", "엘리엇 페이지", "톰 하디"],
-    description: "꿈속에 들어가 생각을 훔치거나 심는 기술을 둘러싼 SF 스릴러.",
-    poster: "",
-    ratings: {
-      imdb: 8.8,
-      cine21: 7.75,
-      rottenTomatoes: 86,
-      letterboxd: 4.3
-    },
-      {
-    id: 11,
-    title: "매트릭스",
-    englishTitle: "The Matrix",
-    year: 1999,
-    genre: ["액션", "SF"],
-    aliases: [
-      "매트릭스",
-      "The Matrix",
-      "Matrix"
-    ],
-    director: "Lana Wachowski, Lilly Wachowski",
+    director: "코엔 형제",
     actors: [
-      "키아누 리브스",
-      "로렌스 피시번",
-      "캐리 앤 모스",
-      "휴고 위빙"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.7,
-      cine21: 7.67,
-      rottenTomatoes: 83,
-      letterboxd: 4.2
-    },
-    description: "인간이 가상현실 속에서 살아가고 있다는 사실을 알게 된 해커의 이야기."
-  },
-
-  {
-    id: 12,
-    title: "기생충",
-    englishTitle: "Parasite",
-    year: 2019,
-    genre: ["드라마", "스릴러"],
-    aliases: [
-      "기생충",
-      "Parasite",
-      "Gisaengchung"
-    ],
-    director: "Bong Joon Ho",
-    actors: [
-      "송강호",
-      "이선균",
-      "조여정",
-      "최우식",
-      "박소담"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.5,
-      cine21: 9.09,
-      rottenTomatoes: 99,
-      letterboxd: 4.5
-    },
-    description: "서로 다른 계층의 두 가족이 만나면서 벌어지는 이야기를 그린 작품."
-  },
-
-  {
-    id: 13,
-    title: "파이트 클럽",
-    englishTitle: "Fight Club",
-    year: 1999,
-    genre: ["드라마", "스릴러", "범죄"],
-    aliases: [
-      "파이트클럽",
-      "Fight Club"
-    ],
-    director: "David Fincher",
-    actors: [
-      "브래드 피트",
-      "에드워드 노튼",
-      "헬레나 본햄 카터"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.8,
-      cine21: 6.33,
-      rottenTomatoes: 81,
-      letterboxd: 4.2
-    },
-    description: "평범한 삶에 공허함을 느끼던 남자가 새로운 인물을 만나면서 벌어지는 심리 드라마."
-  },
-
-  {
-    id: 14,
-    title: "쉰들러 리스트",
-    englishTitle: "Schindler's List",
-    year: 1993,
-    genre: ["드라마", "전쟁", "역사"],
-    aliases: [
-      "쉰들러리스트",
-      "쉰들러 리스트",
-      "Schindler's List"
-    ],
-    director: "Steven Spielberg",
-    actors: [
-      "리암 니슨",
-      "랄프 파인즈",
-      "벤 킹슬리"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 9.0,
-      cine21: "없음",
-      rottenTomatoes: 98,
-      letterboxd: 4.4
-    },
-    description: "제2차 세계대전 당시 오스카 쉰들러의 이야기를 그린 역사 드라마."
-  },
-
-  {
-    id: 15,
-    title: "좋은 친구들",
-    englishTitle: "Goodfellas",
-    year: 1990,
-    genre: ["범죄", "드라마"],
-    aliases: [
-      "좋은 친구들",
-      "Goodfellas",
-      "굿펠라스"
-    ],
-    director: "Martin Scorsese",
-    actors: [
-      "로버트 드 니로",
-      "레이 리오타",
-      "조 페시"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.7,
-      cine21: "없음",
-      rottenTomatoes: 95,
-      letterboxd: 4.4
-    },
-    description: "마피아 조직에 들어간 한 남자의 삶과 몰락을 그린 범죄 영화."
-  },
-
-  {
-    id: 16,
-    title: "양들의 침묵",
-    englishTitle: "The Silence of the Lambs",
-    year: 1991,
-    genre: ["범죄", "스릴러", "공포"],
-    aliases: [
-      "양들의침묵",
-      "The Silence of the Lambs",
-      "Silence of the Lambs"
-    ],
-    director: "Jonathan Demme",
-    actors: [
-      "조디 포스터",
-      "앤서니 홉킨스",
-      "스콧 글렌"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.6,
-      cine21: "없음",
-      rottenTomatoes: 95,
-      letterboxd: 4.2
-    },
-    description: "FBI 수습 요원이 연쇄범죄 사건을 해결하기 위해 수감된 범죄자와 대화하는 이야기."
-  },
-
-  {
-    id: 17,
-    title: "굿 윌 헌팅",
-    englishTitle: "Good Will Hunting",
-    year: 1997,
-    genre: ["드라마"],
-    aliases: [
-      "굿윌헌팅",
-      "Good Will Hunting"
-    ],
-    director: "Gus Van Sant",
-    actors: [
-      "맷 데이먼",
-      "로빈 윌리엄스",
-      "벤 애플렉",
-      "미니 드라이버"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.4,
-      cine21: "없음",
-      rottenTomatoes: 97,
-      letterboxd: 4.2
-    },
-    description: "천재적인 재능을 가진 청년이 심리학자를 만나 자신의 삶을 변화시켜 나가는 이야기."
-  },
-
-  {
-    id: 18,
-    title: "그린 마일",
-    englishTitle: "The Green Mile",
-    year: 1999,
-    genre: ["드라마", "판타지"],
-    aliases: [
-      "그린마일",
-      "The Green Mile",
-      "Green Mile"
-    ],
-    director: "Frank Darabont",
-    actors: [
-      "톰 행크스",
-      "마이클 클라크 덩컨",
-      "데이비드 모스"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.6,
-      cine21: 6.33,
-      rottenTomatoes: 78,
-      letterboxd: 4.1
-    },
-    description: "교도소의 간수와 특별한 능력을 가진 사형수의 만남을 그린 드라마."
-  },
-
-  {
-    id: 19,
-    title: "프레스티지",
-    englishTitle: "The Prestige",
-    year: 2006,
-    genre: ["드라마", "미스터리", "SF", "스릴러"],
-    aliases: [
-      "프레스티지",
-      "The Prestige"
-    ],
-    director: "Christopher Nolan",
-    actors: [
-      "휴 잭맨",
-      "크리스찬 베일",
-      "마이클 케인",
-      "스칼릿 조핸슨"
-    ],
-    poster: "",
-    ratings: {
-      imdb: 8.5,
-      cine21: 6.00,
-      rottenTomatoes: 77,
-      letterboxd: 4.2
-    },
-    description: "서로 경쟁하는 두 마술사의 집착과 경쟁을 그린 미스터리 영화."
-  },
-
-  {
-    id: 20,
-    title: "트루먼 쇼",
-    englishTitle: "The Truman Show",
-    year: 1998,
-    genre: ["드라마", "코미디", "SF"],
-    aliases: [
-      "트루먼쇼",
-      "트루먼 쇼",
-      "The Truman Show"
-    ],
-    director: "Peter Weir",
-    actors: [
-      "짐 캐리",
-      "에드 해리스",
-      "로라 리니"
+      "토미 리 존스",
+      "하비에르 바르뎀",
+      "조슈 브롤린",
+      "우디 해럴슨"
     ],
     poster: "",
     ratings: {
       imdb: 8.2,
-      cine21: 7.50,
-      rottenTomatoes: 94,
+      cine21: 8.51,
+      rottenTomatoes: 8.6,
       letterboxd: 4.1
     },
-    description: "자신의 삶 전체가 거대한 방송 프로그램이었다는 사실을 깨닫게 되는 한 남자의 이야기."
+    description:
+      "우연히 거액의 돈을 발견한 남자를 중심으로 추적과 긴장이 이어지는 범죄 스릴러."
+  },
+
+  {
+    id: 7,
+    title: "블랙 스완",
+    englishTitle: "Black Swan",
+    year: 2010,
+    genre: ["드라마", "스릴러", "미스터리"],
+    aliases: [
+      "블랙 스완",
+      "Black Swan",
+      "Black Swan 2010"
+    ],
+    director: "대런 아로노프스키",
+    actors: [
+      "나탈리 포트만",
+      "밀라 쿠니스",
+      "뱅상 카셀",
+      "위노나 라이더"
+    ],
+    poster: "",
+    ratings: {
+      imdb: 8.0,
+      cine21: 8.54,
+      rottenTomatoes: 8.4,
+      letterboxd: 4.0
+    },
+    description:
+      "완벽한 무대를 준비하는 발레리나가 경쟁과 압박을 겪으며 변화하는 과정을 그린 심리 드라마."
+  },
+
+  {
+    id: 8,
+    title: "그녀",
+    englishTitle: "Her",
+    year: 2013,
+    genre: ["SF", "로맨스", "드라마"],
+    aliases: [
+      "그녀",
+      "Her"
+    ],
+    director: "스파이크 존즈",
+    actors: [
+      "호아킨 피닉스",
+      "스칼릿 조핸슨",
+      "에이미 애덤스",
+      "루니 마라"
+    ],
+    poster: "",
+    ratings: {
+      imdb: 8.0,
+      cine21: 8.10,
+      rottenTomatoes: 8.2,
+      letterboxd: 4.0
+    },
+    description:
+      "인공지능 운영체제와 인간의 관계를 통해 사랑과 인간관계의 의미를 탐구하는 SF 드라마."
+  },
+
+  {
+    id: 9,
+    title: "더 울프 오브 월 스트리트",
+    englishTitle: "The Wolf of Wall Street",
+    year: 2013,
+    genre: ["범죄", "드라마", "코미디"],
+    aliases: [
+      "더 울프 오브 월 스트리트",
+      "The Wolf of Wall Street",
+      "Wolf of Wall Street",
+      "더 울프"
+    ],
+    director: "마틴 스코세이지",
+    actors: [
+      "레오나르도 디카프리오",
+      "조나 힐",
+      "마고 로비",
+      "매튜 매커너히"
+    ],
+    poster: "",
+    ratings: {
+      imdb: 8.2,
+      cine21: 7.59,
+      rottenTomatoes: 8.3,
+      letterboxd: 4.0
+    },
+    description:
+      "월스트리트에서 성공을 거둔 한 인물의 성장과 몰락을 그린 범죄 드라마."
+  },
+
+  {
+    id: 10,
+    title: "라따뚜이",
+    englishTitle: "Ratatouille",
+    year: 2007,
+    genre: ["애니메이션", "코미디", "가족"],
+    aliases: [
+      "라따뚜이",
+      "Ratatouille"
+    ],
+    director: "브래드 버드",
+    actors: [
+      "패튼 오스왈트",
+      "이안 홈",
+      "루 로마노",
+      "피터 오툴"
+    ],
+    poster: "",
+    ratings: {
+      imdb: 8.1,
+      cine21: 8.28,
+      rottenTomatoes: 8.7,
+      letterboxd: 4.1
+    },
+    description:
+      "요리에 대한 꿈을 가진 생쥐가 요리사와 함께 자신의 꿈을 이루어가는 애니메이션."
   }
-  };
+];
