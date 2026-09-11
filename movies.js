@@ -4,25 +4,25 @@ const movies = [
     title: "12명의 성난 사람들",
     englishTitle: "12 Angry Men",
     year: 1957,
-    genre: ["드라마", "범죄"],
+    genre: ["드라마"],
     aliases: [
       "12명의 성난 사람들",
       "12 Angry Men",
-      "Twelve Angry Men",
-      "12명의 성난 남자들"
+      "Twelve Angry Men"
     ],
     director: "시드니 루멧",
     actors: [
       "헨리 폰다",
       "리 J. 콥",
       "에드 베글리",
-      "잭 클러그먼"
+      "E.G. 마셜"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg",
     ratings: {
       imdb: 9.0,
       cine21: 9.11,
-      rottenTomatoes: 9.7,
+      rottenTomatoes: 97,
       letterboxd: 4.6
     },
     description:
@@ -34,7 +34,7 @@ const movies = [
     title: "세븐",
     englishTitle: "Se7en",
     year: 1995,
-    genre: ["범죄", "스릴러", "미스터리"],
+    genre: ["범죄", "미스터리", "스릴러"],
     aliases: [
       "세븐",
       "Se7en",
@@ -47,11 +47,12 @@ const movies = [
       "기네스 팰트로",
       "케빈 스페이시"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg",
     ratings: {
       imdb: 8.6,
       cine21: 8.54,
-      rottenTomatoes: 9.5,
+      rottenTomatoes: 95,
       letterboxd: 4.3
     },
     description:
@@ -68,8 +69,7 @@ const movies = [
       "레옹",
       "Léon: The Professional",
       "Leon",
-      "The Professional",
-      "레옹: 더 프로페셔널"
+      "The Professional"
     ],
     director: "뤽 베송",
     actors: [
@@ -78,11 +78,12 @@ const movies = [
       "게리 올드만",
       "대니 아이엘로"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/yI6X2cCM5YPJtxMhUd3dPGqDAhw.jpg",
     ratings: {
       imdb: 8.5,
       cine21: 8.63,
-      rottenTomatoes: 9.5,
+      rottenTomatoes: 95,
       letterboxd: 4.0
     },
     description:
@@ -106,11 +107,12 @@ const movies = [
       "프랭크 핀레이",
       "에밀리아 폭스"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/2hFvxCCWrTmCYwfy7yum0GKRi3Y.jpg",
     ratings: {
       imdb: 8.5,
       cine21: 7.95,
-      rottenTomatoes: 9.6,
+      rottenTomatoes: 96,
       letterboxd: 4.4
     },
     description:
@@ -135,11 +137,12 @@ const movies = [
       "저스틴 팀버레이크",
       "아미 해머"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/n0ybibhJtQ5icDqTp8eRytcIHJx.jpg",
     ratings: {
       imdb: 7.8,
       cine21: 8.02,
-      rottenTomatoes: 8.7,
+      rottenTomatoes: 87,
       letterboxd: 4.0
     },
     description:
@@ -160,14 +163,15 @@ const movies = [
     actors: [
       "토미 리 존스",
       "하비에르 바르뎀",
-      "조슈 브롤린",
+      "조시 브롤린",
       "우디 해럴슨"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/6d5XOczc226jECq0LIX0siKtgHR.jpg",
     ratings: {
       imdb: 8.2,
       cine21: 8.51,
-      rottenTomatoes: 8.6,
+      rottenTomatoes: 86,
       letterboxd: 4.1
     },
     description:
@@ -182,8 +186,7 @@ const movies = [
     genre: ["드라마", "스릴러", "미스터리"],
     aliases: [
       "블랙 스완",
-      "Black Swan",
-      "Black Swan 2010"
+      "Black Swan"
     ],
     director: "대런 아로노프스키",
     actors: [
@@ -192,11 +195,12 @@ const movies = [
       "뱅상 카셀",
       "위노나 라이더"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/PgK9d0vegvPCx92b7c15sk4x8h.jpg",
     ratings: {
       imdb: 8.0,
       cine21: 8.54,
-      rottenTomatoes: 8.4,
+      rottenTomatoes: 84,
       letterboxd: 4.0
     },
     description:
@@ -220,11 +224,12 @@ const movies = [
       "에이미 애덤스",
       "루니 마라"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/eCOtqtfvn7mxGl6nfmq4b1exJRc.jpg",
     ratings: {
       imdb: 8.0,
       cine21: 8.10,
-      rottenTomatoes: 8.2,
+      rottenTomatoes: 82,
       letterboxd: 4.0
     },
     description:
@@ -240,8 +245,7 @@ const movies = [
     aliases: [
       "더 울프 오브 월 스트리트",
       "The Wolf of Wall Street",
-      "Wolf of Wall Street",
-      "더 울프"
+      "Wolf of Wall Street"
     ],
     director: "마틴 스코세이지",
     actors: [
@@ -250,11 +254,12 @@ const movies = [
       "마고 로비",
       "매튜 매커너히"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/kW9LmvYHAaS9iA0tHmZVq8hQYoq.jpg",
     ratings: {
       imdb: 8.2,
       cine21: 7.59,
-      rottenTomatoes: 8.3,
+      rottenTomatoes: 83,
       letterboxd: 4.0
     },
     description:
@@ -278,11 +283,12 @@ const movies = [
       "루 로마노",
       "피터 오툴"
     ],
-    poster: "",
+    poster:
+      "https://image.tmdb.org/t/p/w500/t3vaWRPSf6WjDSamIkKDs1iQWna.jpg",
     ratings: {
       imdb: 8.1,
       cine21: 8.28,
-      rottenTomatoes: 8.7,
+      rottenTomatoes: 87,
       letterboxd: 4.1
     },
     description:
