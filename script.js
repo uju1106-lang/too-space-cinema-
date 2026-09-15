@@ -1,25 +1,10 @@
-// ==========================================
-// 1. 전역 상태 및 설정 (State & Config)
-// ==========================================
+// 전역 상태
 let currentMovies = [];
 let currentGenre = 'ALL';
 let currentSort = 'title-asc';
 let currentSearch = '';
 let selectedMovie = null;
 
-// 평점 환산 기준 (10점 만점 기준)
-const RATING_SCALES = {
-    imdb: 10,
-    cine21: 10,
-    rottenTomatoes: 100, // 100% -> 10점 만점 (÷10)
-    letterboxd: 5        // 5점 만점 -> 10점 만점 (×2)
-};
-
-// ==========================================
-// 2. 헬퍼 및 유틸리티 함수 (Utility Functions)
-// ==========================================
-
-// HTML 특수문자 이스케이프 (XSS 방지)
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -30,21 +15,18 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// 영화 데이터 내 장르 배열 추출 (문자열/배열 모두 지원)
 function getGenreArray(movie) {
     if (!movie.genre) return [];
     if (Array.isArray(movie.genre)) return movie.genre;
     return movie.genre.split(',').map(g => g.trim());
 }
 
-// 영화 데이터 내 출연진 배열 추출 (cast / actors 모두 지원)
 function getCastArray(movie) {
     const cast = movie.cast || movie.actors || [];
     if (Array.isArray(cast)) return cast;
     return String(cast).split(',').map(c => c.trim());
 }
 
-// 평점 정규화 (10점 만점 기준 계산)
 function normalizeRating(source, score) {
     const numericScore = parseFloat(score);
     if (isNaN(numericScore)) return 0;
@@ -58,10 +40,8 @@ function normalizeRating(source, score) {
     return numericScore;
 }
 
-// 종합 평균 평점 계산
 function calculateAverageRating(ratings) {
     if (!ratings || Object.keys(ratings).length === 0) return 0;
-
     let totalNormalized = 0;
     let count = 0;
 
@@ -69,13 +49,9 @@ function calculateAverageRating(ratings) {
         totalNormalized += normalizeRating(source, score);
         count++;
     }
-
     return count > 0 ? (totalNormalized / count).toFixed(1) : 0;
 }
 
-// ==========================================
-// 3. 포스터 캐시 & 위키피디아 API
-// ==========================================
 function getPosterCache(title) {
     try {
         const cache = localStorage.getItem(`poster_${title}`);
@@ -95,7 +71,6 @@ function savePosterCache(title, url) {
 
 async function fetchWikipediaPoster(englishTitle) {
     if (!englishTitle) return null;
-
     const cached = getPosterCache(englishTitle);
     if (cached) return cached.url;
 
@@ -107,9 +82,7 @@ async function fetchWikipediaPoster(englishTitle) {
         const data = await response.json();
         const imageUrl = data.thumbnail ? data.thumbnail.source : null;
 
-        if (imageUrl) {
-            savePosterCache(englishTitle, imageUrl);
-        }
+        if (imageUrl) savePosterCache(englishTitle, imageUrl);
         return imageUrl;
     } catch (error) {
         console.error('위키피디아 포스터 로드 실패:', error);
@@ -117,9 +90,6 @@ async function fetchWikipediaPoster(englishTitle) {
     }
 }
 
-// ==========================================
-// 4. 검색, 필터링 및 정렬 (Filtering & Sorting)
-// ==========================================
 function movieMatchesSearch(movie, keyword) {
     if (!keyword) return true;
     const cleanKeyword = keyword.trim().toLowerCase();
@@ -142,45 +112,32 @@ function movieMatchesSearch(movie, keyword) {
 function filterAndSortMovies() {
     let result = [...currentMovies];
 
-    // 장르 필터
     if (currentGenre !== 'ALL') {
         result = result.filter(movie => getGenreArray(movie).includes(currentGenre));
     }
 
-    // 검색어 필터
     if (currentSearch) {
         result = result.filter(movie => movieMatchesSearch(movie, currentSearch));
     }
 
-    // 정렬
     result.sort((a, b) => {
         const ratingA = parseFloat(calculateAverageRating(a.ratings));
         const ratingB = parseFloat(calculateAverageRating(b.ratings));
 
         switch (currentSort) {
-            case 'title-asc':
-                return a.title.localeCompare(b.title, 'ko');
-            case 'title-desc':
-                return b.title.localeCompare(a.title, 'ko');
-            case 'year-asc':
-                return a.year - b.year;
-            case 'year-desc':
-                return b.year - a.year;
-            case 'rating-desc':
-                return ratingB - ratingA;
-            case 'rating-asc':
-                return ratingA - ratingB;
-            default:
-                return 0;
+            case 'title-asc': return a.title.localeCompare(b.title, 'ko');
+            case 'title-desc': return b.title.localeCompare(a.title, 'ko');
+            case 'year-asc': return a.year - b.year;
+            case 'year-desc': return b.year - a.year;
+            case 'rating-desc': return ratingB - ratingA;
+            case 'rating-asc': return ratingA - ratingB;
+            default: return 0;
         }
     });
 
     return result;
 }
 
-// ==========================================
-// 5. DOM 렌더링 (UI Rendering)
-// ==========================================
 function createMovieCard(movie) {
     const card = document.createElement('div');
     card.className = 'movie-card';
@@ -206,9 +163,8 @@ function createMovieCard(movie) {
     `;
 
     const imgElement = card.querySelector('.poster-img');
-    
-    // 포스터가 없거나 이미지 경로 에러 시 위키피디아 자동 검색
     const englishTitle = movie.englishTitle || movie.titleEn;
+
     if ((!movie.posterUrl && !movie.poster) && englishTitle) {
         fetchWikipediaPoster(englishTitle).then(wikiPoster => {
             if (wikiPoster) imgElement.src = wikiPoster;
@@ -273,9 +229,6 @@ function renderGenreButtons() {
     });
 }
 
-// ==========================================
-// 6. 모달 창 (Modal UI)
-// ==========================================
 function openModal(movie) {
     selectedMovie = movie;
     const modal = document.getElementById('movieModal');
@@ -293,29 +246,14 @@ function openModal(movie) {
         `).join('');
     }
 
-    const titleEl = document.getElementById('modalTitle');
-    if (titleEl) titleEl.textContent = movie.title || '';
-
-    const titleEnEl = document.getElementById('modalTitleEn');
-    if (titleEnEl) titleEnEl.textContent = movie.englishTitle || movie.titleEn || '';
-
-    const yearEl = document.getElementById('modalYear');
-    if (yearEl) yearEl.textContent = movie.year || '';
-
-    const directorEl = document.getElementById('modalDirector');
-    if (directorEl) directorEl.textContent = movie.director || '정보 없음';
-
-    const castEl = document.getElementById('modalCast');
-    if (castEl) castEl.textContent = getCastArray(movie).join(', ') || '정보 없음';
-
-    const plotEl = document.getElementById('modalPlot');
-    if (plotEl) plotEl.textContent = movie.description || movie.plot || '줄거리 정보가 없습니다.';
-
-    const avgRatingEl = document.getElementById('modalAvgRating');
-    if (avgRatingEl) avgRatingEl.textContent = avgRating;
-
-    const ratingsListEl = document.getElementById('modalRatingsList');
-    if (ratingsListEl) ratingsListEl.innerHTML = ratingsHtml;
+    document.getElementById('modalTitle').textContent = movie.title || '';
+    document.getElementById('modalTitleEn').textContent = movie.englishTitle || movie.titleEn || '';
+    document.getElementById('modalYear').textContent = movie.year || '';
+    document.getElementById('modalDirector').textContent = movie.director || '정보 없음';
+    document.getElementById('modalCast').textContent = getCastArray(movie).join(', ') || '정보 없음';
+    document.getElementById('modalPlot').textContent = movie.description || movie.plot || '줄거리 정보가 없습니다.';
+    document.getElementById('modalAvgRating').textContent = avgRating;
+    document.getElementById('modalRatingsList').innerHTML = ratingsHtml;
 
     const modalPoster = document.getElementById('modalPoster');
     if (modalPoster) {
@@ -342,85 +280,13 @@ function closeModal() {
     selectedMovie = null;
 }
 
-// ==========================================
-// 7. 데이터 검증 및 디버깅 도구
-// ==========================================
-function validateMovieData(movies) {
-    const errors = [];
-    const ids = new Set();
-
-    if (!Array.isArray(movies)) {
-        return { valid: false, errors: ['영화 데이터가 배열 형태가 아닙니다.'] };
-    }
-
-    movies.forEach((movie, idx) => {
-        if (!movie.id) errors.push(`[인덱스 ${idx}] ID 누락`);
-        else if (ids.has(movie.id)) errors.push(`[ID: ${movie.id}] 중복 ID 발견`);
-        else ids.add(movie.id);
-
-        if (!movie.title) errors.push(`[ID: ${movie.id || idx}] 영화 제목 누락`);
-        if (!movie.year) errors.push(`[ID: ${movie.id || idx}] 개봉연도 누락`);
-    });
-
-    return {
-        valid: errors.length === 0,
-        total: movies.length,
-        errors
-    };
-}
-
-// 디버깅 콘솔 함수들
-window.debugMovies = () => console.table(currentMovies);
-window.debugRatings = () => {
-    currentMovies.forEach(m => {
-        console.log(`${m.title}: 종합 평점 ${calculateAverageRating(m.ratings)}`, m.ratings);
-    });
-};
-
-// ==========================================
-// 8. 통계 반환 및 앱 초기화
-// ==========================================
-window.getMovieStats = function() {
-    const totalCount = currentMovies.length;
-    if (totalCount === 0) {
-        return { totalMovies: 0, averageRating: 0, genresCount: 0 };
-    }
-
-    let totalAvgRating = 0;
-    const genres = new Set();
-
-    currentMovies.forEach(movie => {
-        totalAvgRating += parseFloat(calculateAverageRating(movie.ratings));
-        getGenreArray(movie).forEach(g => genres.add(g));
-    });
-
-    return {
-        totalMovies: totalCount,
-        averageRating: (totalAvgRating / totalCount).toFixed(2),
-        genresCount: genres.size,
-        genresList: Array.from(genres)
-    };
-};
-
 function initCinemaApp(moviesData) {
-    if (!moviesData) {
-        console.error('영화 데이터를 불러오지 못했습니다.');
-        return;
-    }
-
+    if (!moviesData) return;
     currentMovies = moviesData;
 
-    // 데이터 검증
-    const validation = validateMovieData(currentMovies);
-    if (!validation.valid) {
-        console.warn('영화 데이터 검증 경고:', validation.errors);
-    }
-
-    // UI 요소 및 이벤트 리스너 등록
     renderGenreButtons();
     renderMovies();
 
-    // 검색창 이벤트
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -429,7 +295,6 @@ function initCinemaApp(moviesData) {
         });
     }
 
-    // 정렬 이벤트
     const sortSelect = document.getElementById('sortSelect');
     if (sortSelect) {
         sortSelect.addEventListener('change', (e) => {
@@ -438,11 +303,8 @@ function initCinemaApp(moviesData) {
         });
     }
 
-    // 모달 이벤트
     const modalCloseBtn = document.getElementById('modalCloseBtn');
-    if (modalCloseBtn) {
-        modalCloseBtn.addEventListener('click', closeModal);
-    }
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
 
     const modal = document.getElementById('movieModal');
     if (modal) {
@@ -456,5 +318,11 @@ function initCinemaApp(moviesData) {
     });
 }
 
-// 전역 진입점 등록
-window.initCinemaApp = initCinemaApp;
+// 페이지 로드 시 앱 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof movies !== 'undefined') {
+        initCinemaApp(movies);
+    } else {
+        console.error('data.js 파일에서 movies 데이터를 찾을 수 없습니다.');
+    }
+});
