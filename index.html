@@ -1,738 +1,191 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Too Space Cinema</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    background: #08090d;
-    color: #f5f5f5;
-    font-family: Arial, "Noto Sans KR", sans-serif;
-  }
-
-  .movie-card {
-    background: #12141b;
-    border: 1px solid #252936;
-    border-radius: 16px;
-    overflow: hidden;
-    transition: 0.25s;
-    cursor: pointer;
-  }
-
-  .movie-card:hover {
-    transform: translateY(-6px);
-    border-color: #777;
-    box-shadow: 0 15px 35px rgba(0,0,0,.35);
-  }
-
-  .poster {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    display: block;
-    background: #1b1d25;
-  }
-
-  .modal-bg {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.82);
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .modal {
-    width: min(900px, 100%);
-    max-height: 90vh;
-    overflow-y: auto;
-    background: #11131a;
-    border: 1px solid #30333e;
-    border-radius: 20px;
-    padding: 25px;
-  }
-
-  .rating-box {
-    background: #191c25;
-    border: 1px solid #2b2e39;
-    border-radius: 14px;
-    padding: 16px;
-  }
-
-  .search-box {
-    background: #141720;
-    border: 1px solid #30333e;
-  }
-
-  select, input {
-    outline: none;
-  }
-
-  .logo {
-    letter-spacing: -1px;
-  }
-</style>
-</head>
-
-<body>
-
-<!-- HEADER -->
-<header class="border-b border-gray-800 sticky top-0 z-50 bg-[#08090d]/95 backdrop-blur">
-  <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col md:flex-row gap-4 justify-between items-center">
-
-    <button onclick="resetAll()" class="logo text-2xl md:text-3xl font-black">
-      Too Space <span class="text-gray-400">Cinema</span>
-    </button>
-
-    <div class="flex gap-2 w-full md:w-auto">
-
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="영화 제목, 감독, 배우 검색..."
-        class="search-box rounded-xl px-4 py-3 w-full md:w-80 text-white"
-        oninput="renderMovies()"
-      >
-
-      <button
-        onclick="resetAll()"
-        class="px-4 py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200">
-        초기화
-      </button>
-
-    </div>
-
-  </div>
-</header>
-
-
-<!-- MAIN -->
-<main class="max-w-7xl mx-auto px-5 py-8">
-
-  <!-- INTRO -->
-  <section class="mb-8">
-
-    <p class="text-gray-500 text-sm mb-2">
-      MOVIE DATABASE
-    </p>
-
-    <h1 class="text-4xl md:text-6xl font-black mb-4">
-      Too Space Cinema
-    </h1>
-
-    <p class="text-gray-400 max-w-2xl">
-      다양한 시대의 영화를 한곳에서 검색하고,
-      여러 영화 사이트의 평점을 비교해 볼 수 있는 영화 아카이브입니다.
-    </p>
-
-  </section>
-
-
-  <!-- FILTER -->
-  <section class="flex flex-col md:flex-row gap-3 mb-8">
-
-    <select
-      id="genreFilter"
-      onchange="renderMovies()"
-      class="bg-[#141720] border border-gray-700 rounded-xl px-4 py-3">
-    </select>
-
-    <select
-      id="sortSelect"
-      onchange="renderMovies()"
-      class="bg-[#141720] border border-gray-700 rounded-xl px-4 py-3">
-
-      <option value="new">최신순</option>
-      <option value="old">오래된순</option>
-      <option value="rating">평점순</option>
-      <option value="name">가나다순</option>
-
-    </select>
-
-    <div
-      id="countText"
-      class="flex items-center px-4 text-gray-400">
-    </div>
-
-  </section>
-
-
-  <!-- MOVIES -->
-  <section
-    id="movieGrid"
-    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-  </section>
-
-</main>
-
-
-<!-- MODAL -->
-<div id="modalBg" class="modal-bg" onclick="closeModal(event)">
-
-  <div class="modal">
-
-    <div class="flex justify-between items-start mb-6">
-
-      <div>
-        <p id="modalYear" class="text-gray-500"></p>
-        <h2 id="modalTitle" class="text-3xl font-black"></h2>
-        <p id="modalOriginal" class="text-gray-500 mt-1"></p>
-      </div>
-
-      <button
-        onclick="closeModal()"
-        class="text-gray-400 text-2xl hover:text-white">
-        ✕
-      </button>
-
-    </div>
-
-
-    <div class="grid md:grid-cols-[260px_1fr] gap-7">
-
-      <img
-        id="modalPoster"
-        class="poster rounded-xl"
-        src=""
-        alt=""
-      >
-
-      <div>
-
-        <div class="mb-6">
-
-          <p class="text-gray-500 text-sm mb-1">
-            감독
-          </p>
-
-          <p id="modalDirector" class="font-bold text-lg"></p>
-
-        </div>
-
-
-        <div class="mb-6">
-
-          <p class="text-gray-500 text-sm mb-1">
-            장르
-          </p>
-
-          <p id="modalGenre" class="font-bold"></p>
-
-        </div>
-
-
-        <h3 class="text-xl font-bold mb-4">
-          사이트별 평점
-        </h3>
-
-        <div
-          id="ratingGrid"
-          class="grid grid-cols-2 gap-3">
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<script>
-
-/* =========================================================
-   MOVIE DATA
-========================================================= */
-
 const movies = [
+  {
+    id: 1,
+    title: "12명의 성난 사람들",
+    englishTitle: "12 Angry Men",
+    year: 1957,
+    genre: "범죄, 드라마",
+    aliases: ["12 Angry Men"],
+    director: "시드니 루멧",
+    actors: ["헨리 폰다", "리 J. 콥", "마틴 발삼"],
+    poster: "",
+    ratings: {
+      imdb: 9.0,
+      cine21: 9.11,
+      rottenTomatoes: 97,
+      letterboxd: 4.6
+    },
+    description: "한 소년의 유죄 여부를 두고 12명의 배심원이 치열한 논쟁을 벌이는 법정 드라마."
+  },
 
-  ["시민 케인","Citizen Kane",1941,"드라마","오슨 웰스",8.3,99,100,4.1,7.9],
-  ["카사블랑카","Casablanca",1942,"드라마","마이클 커티즈",8.5,99,100,4.2,8.0],
-  ["자전거 도둑","Bicycle Thieves",1948,"드라마","비토리오 데 시카",8.3,99,89,4.1,8.0],
-  ["라쇼몽","Rashomon",1950,"미스터리","구로사와 아키라",8.2,98,98,4.1,7.9],
-  ["사랑은 비를 타고","Singin' in the Rain",1952,"뮤지컬","진 켈리",8.3,100,99,4.1,8.0],
-  ["12명의 성난 사람들","12 Angry Men",1957,"드라마","시드니 루멧",9.0,100,97,4.4,8.0],
-  ["현기증","Vertigo",1958,"스릴러","알프레드 히치콕",8.3,93,100,4.2,8.0],
-  ["7인의 사무라이","Seven Samurai",1954,"액션","구로사와 아키라",8.6,100,98,4.3,8.1],
-  ["북북서로 진로를 돌려라","North by Northwest",1959,"스릴러","알프레드 히치콕",8.3,97,98,4.1,7.9],
-  ["사이코","Psycho",1960,"공포","알프레드 히치콕",8.5,96,97,4.2,8.0],
-  ["8½","8½",1963,"드라마","페데리코 펠리니",8.0,91,91,4.0,7.8],
-  ["석양의 무법자","The Good, the Bad and the Ugly",1966,"서부","세르조 레오네",8.8,97,90,4.3,8.2],
-  ["2001: 스페이스 오디세이","2001: A Space Odyssey",1968,"SF","스탠리 큐브릭",8.3,92,84,4.1,8.1],
-  ["대부","The Godfather",1972,"범죄","프랜시스 포드 코폴라",9.2,97,100,4.4,8.7],
-  ["택시 드라이버","Taxi Driver",1976,"범죄","마틴 스코세이지",8.2,89,94,4.1,8.1],
-  ["록키","Rocky",1976,"드라마","존 G. 아빌드슨",8.1,92,70,4.0,7.9],
-  ["스타워즈","Star Wars",1977,"SF","조지 루카스",8.6,93,90,4.2,8.2],
-  ["에이리언","Alien",1979,"SF","리들리 스콧",8.5,93,89,4.2,8.2],
-  ["샤이닝","The Shining",1980,"공포","스탠리 큐브릭",8.4,82,66,4.2,8.2],
-  ["레이더스","Raiders of the Lost Ark",1981,"모험","스티븐 스필버그",8.4,96,85,4.1,8.2],
-  ["블레이드 러너","Blade Runner",1982,"SF","리들리 스콧",8.1,89,84,4.1,8.0],
-  ["백 투 더 퓨처","Back to the Future",1985,"SF","로버트 저메키스",8.5,93,87,4.2,8.3],
-  ["시네마 천국","Cinema Paradiso",1988,"드라마","주세페 토르나토레",8.5,90,80,4.2,8.3],
-  ["죽은 시인의 사회","Dead Poets Society",1989,"드라마","피터 위어",8.1,84,79,4.1,8.1],
-  ["좋은 친구들","Goodfellas",1990,"범죄","마틴 스코세이지",8.7,95,92,4.3,8.4],
-  ["양들의 침묵","The Silence of the Lambs",1991,"스릴러","조너선 드미",8.6,95,85,4.2,8.3],
-  ["쥬라기 공원","Jurassic Park",1993,"SF","스티븐 스필버그",8.2,92,68,4.1,8.1],
-  ["쉰들러 리스트","Schindler's List",1993,"드라마","스티븐 스필버그",9.0,98,95,4.4,8.6],
-  ["펄프 픽션","Pulp Fiction",1994,"범죄","쿠엔틴 타란티노",8.9,92,95,4.3,8.5],
-  ["쇼생크 탈출","The Shawshank Redemption",1994,"드라마","프랭크 다라본트",9.3,89,82,4.4,8.7],
-  ["세븐","Se7en",1995,"스릴러","데이비드 핀처",8.6,82,65,4.1,8.4],
-  ["토이 스토리","Toy Story",1995,"애니메이션","존 래시터",8.3,100,96,4.1,8.1],
-  ["파고","Fargo",1996,"범죄","코엔 형제",8.1,95,85,4.1,8.1],
-  ["타이타닉","Titanic",1997,"로맨스","제임스 카메론",7.9,88,75,4.0,8.1],
-  ["트루먼 쇼","The Truman Show",1998,"드라마","피터 위어",8.2,95,90,4.1,8.1],
-  ["매트릭스","The Matrix",1999,"SF","워쇼스키 자매",8.7,83,73,4.2,8.2],
-  ["파이트 클럽","Fight Club",1999,"드라마","데이비드 핀처",8.8,81,66,4.3,8.4],
-  ["글래디에이터","Gladiator",2000,"액션","리들리 스콧",8.5,80,67,4.1,8.2],
-  ["반지의 제왕: 반지 원정대","The Lord of the Rings: The Fellowship of the Ring",2001,"판타지","피터 잭슨",8.9,91,92,4.3,8.5],
-  ["센과 치히로의 행방불명","Spirited Away",2001,"애니메이션","미야자키 하야오",8.6,96,96,4.4,8.6],
-  ["살인의 추억","Memories of Murder",2003,"범죄","봉준호",8.1,95,82,4.2,8.2],
-  ["올드보이","Oldboy",2003,"스릴러","박찬욱",8.1,82,77,4.1,8.1],
-  ["반지의 제왕: 왕의 귀환","The Lord of the Rings: The Return of the King",2003,"판타지","피터 잭슨",9.0,95,94,4.4,8.7],
-  ["이터널 선샤인","Eternal Sunshine of the Spotless Mind",2004,"로맨스","미셸 공드리",8.3,92,89,4.2,8.3],
-  ["배트맨 비긴즈","Batman Begins",2005,"액션","크리스토퍼 놀란",8.2,85,70,4.0,8.1],
-  ["판의 미로","Pan's Labyrinth",2006,"판타지","기예르모 델 토로",8.2,95,98,4.2,8.2],
-  ["노인을 위한 나라는 없다","No Country for Old Men",2007,"범죄","코엔 형제",8.2,93,91,4.2,8.2],
-  ["다크 나이트","The Dark Knight",2008,"액션","크리스토퍼 놀란",9.0,94,84,4.4,8.7],
-  ["월-E","WALL-E",2008,"애니메이션","앤드루 스탠턴",8.4,95,95,4.2,8.4],
-  ["인셉션","Inception",2010,"SF","크리스토퍼 놀란",8.8,87,74,4.2,8.4],
-  ["소셜 네트워크","The Social Network",2010,"드라마","데이비드 핀처",7.8,96,95,4.0,7.8],
-  ["토이 스토리 3","Toy Story 3",2010,"애니메이션","리 언크리치",8.3,98,92,4.1,8.2],
-  ["드라이브","Drive",2011,"액션","니콜라스 윈딩 레픈",7.8,93,78,4.0,7.8],
-  ["언터처블: 1%의 우정","The Intouchables",2011,"드라마","올리비에 나카슈",8.5,76,57,4.1,8.1],
-  ["장고: 분노의 추적자","Django Unchained",2012,"서부","쿠엔틴 타란티노",8.5,87,81,4.2,8.2],
-  ["그랜드 부다페스트 호텔","The Grand Budapest Hotel",2014,"코미디","웨스 앤더슨",8.1,92,88,4.1,8.1],
-  ["위플래쉬","Whiplash",2014,"드라마","데이미언 셔젤",8.5,94,89,4.3,8.3],
-  ["인터스텔라","Interstellar",2014,"SF","크리스토퍼 놀란",8.7,73,74,4.3,8.6],
-  ["버드맨","Birdman",2014,"드라마","알레한드로 G. 이냐리투",7.7,91,87,4.0,7.8],
-  ["매드맥스: 분노의 도로","Mad Max: Fury Road",2015,"액션","조지 밀러",8.1,97,90,4.2,8.2],
-  ["라라랜드","La La Land",2016,"로맨스","데이미언 셔젤",8.0,91,94,4.1,8.0],
-  ["문라이트","Moonlight",2016,"드라마","배리 젠킨스",7.4,98,99,4.1,7.7],
-  ["컨택트","Arrival",2016,"SF","드니 빌뇌브",7.9,94,81,4.0,7.9],
-  ["겟 아웃","Get Out",2017,"공포","조던 필",7.8,98,85,4.0,7.7],
-  ["덩케르크","Dunkirk",2017,"전쟁","크리스토퍼 놀란",7.8,92,94,4.0,7.8],
-  ["스파이더맨: 뉴 유니버스","Spider-Man: Into the Spider-Verse",2018,"애니메이션","밥 퍼시케티",8.4,97,87,4.2,8.3],
-  ["기생충","Parasite",2019,"드라마","봉준호",8.5,99,96,4.3,8.5],
-  ["조커","Joker",2019,"드라마","토드 필립스",8.3,69,59,4.1,8.2],
-  ["1917","1917",2019,"전쟁","샘 멘데스",8.2,88,78,4.0,8.2],
-  ["미나리","Minari",2020,"드라마","정이삭",7.4,98,89,4.0,7.5],
-  ["더 파더","The Father",2020,"드라마","플로리안 젤러",8.2,98,88,4.1,8.1],
-  ["듄","Dune",2021,"SF","드니 빌뇌브",8.0,83,74,4.0,8.0],
-  ["탑건: 매버릭","Top Gun: Maverick",2022,"액션","조셉 코신스키",8.2,96,78,4.1,8.3],
-  ["헤어질 결심","Decision to Leave",2022,"미스터리","박찬욱",7.3,94,85,3.9,7.6],
-  ["에브리씽 에브리웨어 올 앳 원스","Everything Everywhere All at Once",2022,"액션","다니엘 콴",7.7,93,81,4.0,7.8],
-  ["더 배트맨","The Batman",2022,"범죄","맷 리브스",7.8,85,72,3.9,7.7],
-  ["오펜하이머","Oppenheimer",2023,"드라마","크리스토퍼 놀란",8.6,93,89,4.2,8.3],
-  ["스파이더맨: 어크로스 더 유니버스","Spider-Man: Across the Spider-Verse",2023,"애니메이션","호아킴 도스 산토스",8.5,95,86,4.2,8.4],
-  ["플라워 킬링 문","Killers of the Flower Moon",2023,"범죄","마틴 스코세이지",7.6,93,89,3.9,7.7],
-  ["파묘","Exhuma",2024,"공포","장재현",6.9,94,77,3.7,7.0],
-  ["인사이드 아웃 2","Inside Out 2",2024,"애니메이션","켈시 만",7.5,91,73,3.8,7.6],
-  ["듄: 파트 2","Dune: Part Two",2024,"SF","드니 빌뇌브",8.5,92,79,4.3,8.5],
-  ["범죄도시 4","The Roundup: Punishment",2024,"액션","허명행",6.5,80,55,3.4,6.7],
-  ["서브스턴스","The Substance",2024,"공포","코랄리 파르자",7.3,89,78,4.0,7.2],
+  {
+    id: 2,
+    title: "세븐",
+    englishTitle: "Se7en",
+    year: 1995,
+    genre: "범죄, 스릴러, 미스터리",
+    aliases: ["Se7en", "Seven"],
+    director: "데이비드 핀처",
+    actors: ["브래드 피트", "모건 프리먼", "케빈 스페이시"],
+    poster: "",
+    ratings: {
+      imdb: 8.6,
+      cine21: 8.54,
+      rottenTomatoes: 95,
+      letterboxd: 4.3
+    },
+    description: "일곱 가지 죄악을 모티브로 한 연쇄살인 사건을 추적하는 두 형사의 이야기."
+  },
 
-  ["악마는 프라다를 입는다","The Devil Wears Prada",2006,"코미디","데이비드 프랭클",7.0,75,62,3.7,7.4],
-  ["어바웃 타임","About Time",2013,"로맨스","리처드 커티스",7.8,70,55,4.0,8.0],
-  ["500일의 썸머","500 Days of Summer",2009,"로맨스","마크 웹",7.7,85,76,3.8,7.7],
-  ["비긴 어게인","Begin Again",2013,"음악","존 카니",7.4,83,62,3.7,7.5],
-  ["캐치 미 이프 유 캔","Catch Me If You Can",2002,"범죄","스티븐 스필버그",8.1,96,75,4.0,8.0],
-  ["인디아나 존스: 최후의 성전","Indiana Jones and the Last Crusade",1989,"모험","스티븐 스필버그",8.2,88,65,4.1,8.0],
-  ["캐리비안의 해적: 블랙펄의 저주","Pirates of the Caribbean",2003,"모험","고어 버빈스키",8.1,80,63,4.0,7.9],
-  ["아이언맨","Iron Man",2008,"액션","존 파브로",7.9,94,79,3.9,7.9],
-  ["어벤져스: 엔드게임","Avengers: Endgame",2019,"액션","루소 형제",8.4,94,78,4.0,8.3],
-  ["스파이더맨: 노 웨이 홈","Spider-Man: No Way Home",2021,"액션","존 왓츠",8.2,93,71,4.0,8.0],
-  ["해리 포터와 마법사의 돌","Harry Potter and the Sorcerer's Stone",2001,"판타지","크리스 콜럼버스",7.6,80,65,3.9,7.8],
-  ["나이브스 아웃","Knives Out",2019,"미스터리","라이언 존슨",7.9,97,82,4.0,7.8],
-  ["그린 북","Green Book",2018,"드라마","피터 패럴리",8.2,77,69,3.8,8.0],
-  ["포레스트 검프","Forrest Gump",1994,"드라마","로버트 저메키스",8.8,71,82,4.2,8.5],
-  ["라이언 일병 구하기","Saving Private Ryan",1998,"전쟁","스티븐 스필버그",8.6,94,91,4.2,8.4],
-  ["아메리칸 뷰티","American Beauty",1999,"드라마","샘 멘데스",8.3,87,84,4.0,8.0],
-  ["캐롤","Carol",2015,"로맨스","토드 헤인즈",7.2,94,95,4.0,7.7],
-  ["파프리카","Paprika",2006,"애니메이션","곤 사토시",7.7,84,81,4.1,7.9],
-  ["코코","Coco",2017,"애니메이션","리 언크리치",8.4,97,81,4.2,8.4],
-  ["소울","Soul",2020,"애니메이션","피트 닥터",8.0,95,83,4.0,8.1],
-  ["엘리멘탈","Elemental",2023,"애니메이션","피터 손",7.0,74,58,3.6,7.4],
+  {
+    id: 3,
+    title: "레옹",
+    englishTitle: "Léon: The Professional",
+    year: 1994,
+    genre: "범죄, 액션, 드라마, 스릴러",
+    aliases: ["Léon", "The Professional", "레옹: 더 프로페셔널"],
+    director: "뤽 베송",
+    actors: ["장 르노", "나탈리 포트만", "게리 올드만"],
+    poster: "",
+    ratings: {
+      imdb: 8.5,
+      cine21: 8.63,
+      rottenTomatoes: 95,
+      letterboxd: 4.1
+    },
+    description: "킬러 레옹과 가족을 잃은 소녀 마틸다의 특별한 관계를 그린 액션 드라마."
+  },
 
-  ["시민 케인","Citizen Kane",1941,"드라마","오슨 웰스",8.3,99,100,4.1,7.9]
+  {
+    id: 4,
+    title: "피아니스트",
+    englishTitle: "The Pianist",
+    year: 2002,
+    genre: "전쟁, 드라마",
+    aliases: ["The Pianist"],
+    director: "로만 폴란스키",
+    actors: ["애드리언 브로디", "토마스 크레취만", "에밀리아 폭스"],
+    poster: "",
+    ratings: {
+      imdb: 8.5,
+      cine21: 7.95,
+      rottenTomatoes: 96,
+      letterboxd: 4.4
+    },
+    description: "제2차 세계대전 속에서 살아남기 위해 고군분투하는 폴란드 피아니스트의 이야기."
+  },
 
+  {
+    id: 5,
+    title: "소셜 네트워크",
+    englishTitle: "The Social Network",
+    year: 2010,
+    genre: "드라마",
+    aliases: ["The Social Network"],
+    director: "데이비드 핀처",
+    actors: ["제시 아이젠버그", "앤드루 가필드", "저스틴 팀버레이크"],
+    poster: "",
+    ratings: {
+      imdb: 7.8,
+      cine21: 8.02,
+      rottenTomatoes: 87,
+      letterboxd: 4.0
+    },
+    description: "세계적인 소셜 네트워크 서비스의 탄생과 그 과정에서 벌어진 갈등을 그린 영화."
+  },
+
+  {
+    id: 6,
+    title: "노인을 위한 나라는 없다",
+    englishTitle: "No Country for Old Men",
+    year: 2007,
+    genre: "범죄, 드라마, 스릴러",
+    aliases: ["No Country for Old Men"],
+    director: "조엘 코엔, 에단 코엔",
+    actors: ["토미 리 존스", "하비에르 바르뎀", "조슈 브롤린"],
+    poster: "",
+    ratings: {
+      imdb: 8.2,
+      cine21: 8.51,
+      rottenTomatoes: 86,
+      letterboxd: 4.1
+    },
+    description: "우연히 거액의 돈을 손에 넣은 남자와 그를 쫓는 살인자의 추격을 그린 범죄 스릴러."
+  },
+
+  {
+    id: 7,
+    title: "블랙 스완",
+    englishTitle: "Black Swan",
+    year: 2010,
+    genre: "스릴러, 드라마",
+    aliases: ["Black Swan"],
+    director: "대런 애러노프스키",
+    actors: ["나탈리 포트만", "밀라 쿠니스", "뱅상 카셀"],
+    poster: "",
+    ratings: {
+      imdb: 8.0,
+      cine21: 8.54,
+      rottenTomatoes: 84,
+      letterboxd: 4.0
+    },
+    description: "완벽한 발레 공연을 향한 한 발레리나의 집착과 내면의 변화를 그린 심리 스릴러."
+  },
+
+  {
+    id: 8,
+    title: "그녀",
+    englishTitle: "Her",
+    year: 2013,
+    genre: "멜로, 로맨스, 드라마, SF",
+    aliases: ["Her"],
+    director: "스파이크 존즈",
+    actors: ["호아킨 피닉스", "에이미 아담스", "스칼렛 요한슨"],
+    poster: "",
+    ratings: {
+      imdb: 8.0,
+      cine21: 8.10,
+      rottenTomatoes: 82,
+      letterboxd: 4.0
+    },
+    description: "인공지능 운영체제와 특별한 관계를 맺게 되는 한 남자의 이야기를 그린 SF 드라마."
+  },
+
+  {
+    id: 9,
+    title: "더 울프 오브 월 스트리트",
+    englishTitle: "The Wolf of Wall Street",
+    year: 2013,
+    genre: "코미디, 범죄, 드라마",
+    aliases: ["The Wolf of Wall Street"],
+    director: "마틴 스코세이지",
+    actors: ["레오나르도 디카프리오", "조나 힐", "마고 로비"],
+    poster: "",
+    ratings: {
+      imdb: 8.2,
+      cine21: 7.59,
+      rottenTomatoes: 83,
+      letterboxd: 4.0
+    },
+    description: "월스트리트에서 막대한 부를 쌓은 주식 중개인의 성공과 몰락을 그린 범죄 코미디 드라마."
+  },
+
+  {
+    id: 10,
+    title: "라따뚜이",
+    englishTitle: "Ratatouille",
+    year: 2007,
+    genre: "애니메이션, 코미디, 가족",
+    aliases: ["Ratatouille"],
+    director: "브래드 버드",
+    actors: ["패튼 오스왈트", "루 로마노", "이안 홈"],
+    poster: "",
+    ratings: {
+      imdb: 8.1,
+      cine21: 8.28,
+      rottenTomatoes: 87,
+      letterboxd: 4.1
+    },
+    description: "요리를 좋아하는 생쥐 레미가 파리의 레스토랑에서 요리사의 꿈을 이루어가는 이야기."
+  }
 ];
-
-
-/* =========================================================
-   MOVIE OBJECT
-========================================================= */
-
-const movieList = movies.map((m, i) => ({
-  id: i + 1,
-  title: m[0],
-  original: m[1],
-  year: m[2],
-  genre: m[3],
-  director: m[4],
-  imdb: m[5],
-  rt: m[6],
-  metacritic: m[7],
-  letterboxd: m[8],
-  tmdb: m[9]
-}));
-
-
-/* =========================================================
-   POSTER
-========================================================= */
-
-function posterUrl(title) {
-
-  return "https://placehold.co/500x750/151820/FFFFFF?text="
-    + encodeURIComponent(title);
-
-}
-
-
-/* =========================================================
-   HTML ESCAPE
-========================================================= */
-
-function escapeHTML(text) {
-
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================================
-   AVERAGE
-========================================================= */
-
-function averageRating(movie) {
-
-  const values = [
-    movie.imdb,
-    movie.rt / 10,
-    movie.metacritic / 10,
-    movie.letterboxd * 2,
-    movie.tmdb
-  ].filter(x => typeof x === "number");
-
-  if (!values.length) return 0;
-
-  return values.reduce((a,b) => a+b, 0) / values.length;
-
-}
-
-
-/* =========================================================
-   GENRE
-========================================================= */
-
-function loadGenres() {
-
-  const genres = [...new Set(movieList.map(m => m.genre))]
-    .sort();
-
-  const select = document.getElementById("genreFilter");
-
-  select.innerHTML =
-    `<option value="all">전체 장르</option>` +
-    genres.map(g =>
-      `<option value="${escapeHTML(g)}">${escapeHTML(g)}</option>`
-    ).join("");
-
-}
-
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function renderMovies() {
-
-  const search =
-    document.getElementById("searchInput")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const genre =
-    document.getElementById("genreFilter").value;
-
-  const sort =
-    document.getElementById("sortSelect").value;
-
-
-  let filtered = movieList.filter(movie => {
-
-    const text = (
-      movie.title + " " +
-      movie.original + " " +
-      movie.director + " " +
-      movie.genre + " " +
-      movie.year
-    ).toLowerCase();
-
-    const searchOK = text.includes(search);
-
-    const genreOK =
-      genre === "all" ||
-      movie.genre === genre;
-
-    return searchOK && genreOK;
-
-  });
-
-
-  if (sort === "new") {
-
-    filtered.sort((a,b) => b.year - a.year);
-
-  }
-
-  else if (sort === "old") {
-
-    filtered.sort((a,b) => a.year - b.year);
-
-  }
-
-  else if (sort === "rating") {
-
-    filtered.sort(
-      (a,b) => averageRating(b) - averageRating(a)
-    );
-
-  }
-
-  else if (sort === "name") {
-
-    filtered.sort(
-      (a,b) => a.title.localeCompare(b.title, "ko")
-    );
-
-  }
-
-
-  document.getElementById("countText").textContent =
-    `${filtered.length}편`;
-
-  const grid =
-    document.getElementById("movieGrid");
-
-
-  if (!filtered.length) {
-
-    grid.innerHTML = `
-      <div class="col-span-full text-center py-20 text-gray-500">
-        검색 결과가 없습니다.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  grid.innerHTML = filtered.map(movie => {
-
-    return `
-      <article
-        class="movie-card"
-        onclick="openMovie(${movie.id})">
-
-        <img
-          class="poster"
-          src="${posterUrl(movie.title)}"
-          alt="${escapeHTML(movie.title)}"
-          loading="lazy"
-        >
-
-        <div class="p-4">
-
-          <div class="text-xs text-gray-500 mb-1">
-            ${movie.year} · ${escapeHTML(movie.genre)}
-          </div>
-
-          <h2 class="font-bold truncate">
-            ${escapeHTML(movie.title)}
-          </h2>
-
-          <p class="text-sm text-gray-500 truncate mt-1">
-            ${escapeHTML(movie.director)}
-          </p>
-
-          <div class="mt-3 flex justify-between items-center">
-
-            <span class="text-xs text-gray-500">
-              평균
-            </span>
-
-            <span class="font-bold">
-              ${averageRating(movie).toFixed(1)}
-            </span>
-
-          </div>
-
-        </div>
-
-      </article>
-    `;
-
-  }).join("");
-
-}
-
-
-/* =========================================================
-   OPEN MOVIE
-========================================================= */
-
-function openMovie(id) {
-
-  const movie =
-    movieList.find(m => m.id === id);
-
-  if (!movie) return;
-
-
-  document.getElementById("modalTitle").textContent =
-    movie.title;
-
-  document.getElementById("modalOriginal").textContent =
-    movie.original;
-
-  document.getElementById("modalYear").textContent =
-    movie.year;
-
-  document.getElementById("modalDirector").textContent =
-    movie.director;
-
-  document.getElementById("modalGenre").textContent =
-    movie.genre;
-
-  document.getElementById("modalPoster").src =
-    posterUrl(movie.title);
-
-  document.getElementById("modalPoster").alt =
-    movie.title;
-
-
-  document.getElementById("ratingGrid").innerHTML = `
-
-    <div class="rating-box">
-      <p class="text-gray-500 text-sm">IMDb</p>
-      <p class="text-2xl font-black mt-1">
-        ${movie.imdb}/10
-      </p>
-    </div>
-
-    <div class="rating-box">
-      <p class="text-gray-500 text-sm">Rotten Tomatoes</p>
-      <p class="text-2xl font-black mt-1">
-        ${movie.rt}%
-      </p>
-    </div>
-
-    <div class="rating-box">
-      <p class="text-gray-500 text-sm">Metacritic</p>
-      <p class="text-2xl font-black mt-1">
-        ${movie.metacritic}/100
-      </p>
-    </div>
-
-    <div class="rating-box">
-      <p class="text-gray-500 text-sm">Letterboxd</p>
-      <p class="text-2xl font-black mt-1">
-        ${movie.letterboxd}/5
-      </p>
-    </div>
-
-    <div class="rating-box">
-      <p class="text-gray-500 text-sm">TMDB</p>
-      <p class="text-2xl font-black mt-1">
-        ${movie.tmdb}/10
-      </p>
-    </div>
-
-    <div class="rating-box">
-      <p class="text-gray-500 text-sm">
-        Too Space 평균
-      </p>
-
-      <p class="text-2xl font-black mt-1">
-        ${averageRating(movie).toFixed(1)}/10
-      </p>
-    </div>
-
-  `;
-
-
-  document.getElementById("modalBg").style.display =
-    "flex";
-
-}
-
-
-/* =========================================================
-   CLOSE MODAL
-========================================================= */
-
-function closeModal(event) {
-
-  if (
-    !event ||
-    event.target.id === "modalBg"
-  ) {
-
-    document.getElementById("modalBg")
-      .style.display = "none";
-
-  }
-
-}
-
-
-/* =========================================================
-   RESET
-========================================================= */
-
-function resetAll() {
-
-  document.getElementById("searchInput").value = "";
-
-  document.getElementById("genreFilter").value = "all";
-
-  document.getElementById("sortSelect").value = "new";
-
-  renderMovies();
-
-}
-
-
-/* =========================================================
-   START
-========================================================= */
-
-loadGenres();
-
-renderMovies();
-
-</script>
-
-</body>
-</html>
