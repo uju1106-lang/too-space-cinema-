@@ -1,191 +1,132 @@
 const movies = [
-  {
-    id: 1,
-    title: "12명의 성난 사람들",
-    englishTitle: "12 Angry Men",
-    year: 1957,
-    genre: "범죄, 드라마",
-    aliases: ["12 Angry Men"],
-    director: "시드니 루멧",
-    actors: ["헨리 폰다", "리 J. 콥", "마틴 발삼"],
-    poster: "",
-    ratings: {
-      imdb: 9.0,
-      cine21: 9.11,
-      rottenTomatoes: 97,
-      letterboxd: 4.6
+    {
+        id: 1,
+        title: "12명의 성난 사람들",
+        englishTitle: "12 Angry Men",
+        year: 1957,
+        genre: "범죄, 드라마",
+        aliases: ["12 Angry Men"],
+        director: "시드니 루멧",
+        actors: ["헨리 폰다", "리 J. 콥", "마틴 발삼"],
+        poster: "",
+        ratings: { imdb: 9.0, cine21: 9.11, rottenTomatoes: 97, letterboxd: 4.6 },
+        description: "한 소년의 유죄 여부를 두고 12명의 배심원이 치열한 논쟁을 벌이는 법정 드라마."
     },
-    description: "한 소년의 유죄 여부를 두고 12명의 배심원이 치열한 논쟁을 벌이는 법정 드라마."
-  },
-
-  {
-    id: 2,
-    title: "세븐",
-    englishTitle: "Se7en",
-    year: 1995,
-    genre: "범죄, 스릴러, 미스터리",
-    aliases: ["Se7en", "Seven"],
-    director: "데이비드 핀처",
-    actors: ["브래드 피트", "모건 프리먼", "케빈 스페이시"],
-    poster: "",
-    ratings: {
-      imdb: 8.6,
-      cine21: 8.54,
-      rottenTomatoes: 95,
-      letterboxd: 4.3
+    {
+        id: 2,
+        title: "세븐",
+        englishTitle: "Se7en",
+        year: 1995,
+        genre: "범죄, 스릴러, 미스터리",
+        aliases: ["Se7en", "Seven"],
+        director: "데이비드 핀처",
+        actors: ["브래드 피트", "모건 프리먼", "케빈 스페이시"],
+        poster: "",
+        ratings: { imdb: 8.6, cine21: 8.54, rottenTomatoes: 95, letterboxd: 4.3 },
+        description: "일곱 가지 죄악을 모티브로 한 연쇄살인 사건을 추적하는 두 형사의 이야기."
     },
-    description: "일곱 가지 죄악을 모티브로 한 연쇄살인 사건을 추적하는 두 형사의 이야기."
-  },
-
-  {
-    id: 3,
-    title: "레옹",
-    englishTitle: "Léon: The Professional",
-    year: 1994,
-    genre: "범죄, 액션, 드라마, 스릴러",
-    aliases: ["Léon", "The Professional", "레옹: 더 프로페셔널"],
-    director: "뤽 베송",
-    actors: ["장 르노", "나탈리 포트만", "게리 올드만"],
-    poster: "",
-    ratings: {
-      imdb: 8.5,
-      cine21: 8.63,
-      rottenTomatoes: 95,
-      letterboxd: 4.1
+    {
+        id: 3,
+        title: "레옹",
+        englishTitle: "Léon: The Professional",
+        year: 1994,
+        genre: "범죄, 액션, 드라마, 스릴러",
+        aliases: ["Léon", "The Professional", "레옹: 더 프로페셔널"],
+        director: "뤽 베송",
+        actors: ["장 르노", "나탈리 포트만", "게리 올드만"],
+        poster: "",
+        ratings: { imdb: 8.5, cine21: 8.63, rottenTomatoes: 95, letterboxd: 4.1 },
+        description: "킬러 레옹과 가족을 잃은 소녀 마틸다의 특별한 관계를 그린 액션 드라마."
     },
-    description: "킬러 레옹과 가족을 잃은 소녀 마틸다의 특별한 관계를 그린 액션 드라마."
-  },
-
-  {
-    id: 4,
-    title: "피아니스트",
-    englishTitle: "The Pianist",
-    year: 2002,
-    genre: "전쟁, 드라마",
-    aliases: ["The Pianist"],
-    director: "로만 폴란스키",
-    actors: ["애드리언 브로디", "토마스 크레취만", "에밀리아 폭스"],
-    poster: "",
-    ratings: {
-      imdb: 8.5,
-      cine21: 7.95,
-      rottenTomatoes: 96,
-      letterboxd: 4.4
+    {
+        id: 4,
+        title: "피아니스트",
+        englishTitle: "The Pianist",
+        year: 2002,
+        genre: "전쟁, 드라마",
+        aliases: ["The Pianist"],
+        director: "로만 폴란스키",
+        actors: ["애드리언 브로디", "토마스 크레취만", "에밀리아 폭스"],
+        poster: "",
+        ratings: { imdb: 8.5, cine21: 7.95, rottenTomatoes: 96, letterboxd: 4.4 },
+        description: "제2차 세계대전 속에서 살아남기 위해 고군분투하는 폴란드 피아니스트의 이야기."
     },
-    description: "제2차 세계대전 속에서 살아남기 위해 고군분투하는 폴란드 피아니스트의 이야기."
-  },
-
-  {
-    id: 5,
-    title: "소셜 네트워크",
-    englishTitle: "The Social Network",
-    year: 2010,
-    genre: "드라마",
-    aliases: ["The Social Network"],
-    director: "데이비드 핀처",
-    actors: ["제시 아이젠버그", "앤드루 가필드", "저스틴 팀버레이크"],
-    poster: "",
-    ratings: {
-      imdb: 7.8,
-      cine21: 8.02,
-      rottenTomatoes: 87,
-      letterboxd: 4.0
+    {
+        id: 5,
+        title: "소셜 네트워크",
+        englishTitle: "The Social Network",
+        year: 2010,
+        genre: "드라마",
+        aliases: ["The Social Network"],
+        director: "데이비드 핀처",
+        actors: ["제시 아이젠버그", "앤드루 가필드", "저스틴 팀버레이크"],
+        poster: "",
+        ratings: { imdb: 7.8, cine21: 8.02, rottenTomatoes: 87, letterboxd: 4.0 },
+        description: "세계적인 소셜 네트워크 서비스의 탄생과 그 과정에서 벌어진 갈등을 그린 영화."
     },
-    description: "세계적인 소셜 네트워크 서비스의 탄생과 그 과정에서 벌어진 갈등을 그린 영화."
-  },
-
-  {
-    id: 6,
-    title: "노인을 위한 나라는 없다",
-    englishTitle: "No Country for Old Men",
-    year: 2007,
-    genre: "범죄, 드라마, 스릴러",
-    aliases: ["No Country for Old Men"],
-    director: "조엘 코엔, 에단 코엔",
-    actors: ["토미 리 존스", "하비에르 바르뎀", "조슈 브롤린"],
-    poster: "",
-    ratings: {
-      imdb: 8.2,
-      cine21: 8.51,
-      rottenTomatoes: 86,
-      letterboxd: 4.1
+    {
+        id: 6,
+        title: "노인을 위한 나라는 없다",
+        englishTitle: "No Country for Old Men",
+        year: 2007,
+        genre: "범죄, 드라마, 스릴러",
+        aliases: ["No Country for Old Men"],
+        director: "조엘 코엔, 에단 코엔",
+        actors: ["토미 리 존스", "하비에르 바르뎀", "조슈 브롤린"],
+        poster: "",
+        ratings: { imdb: 8.2, cine21: 8.51, rottenTomatoes: 86, letterboxd: 4.1 },
+        description: "우연히 거액의 돈을 손에 넣은 남자와 그를 쫓는 살인자의 추격을 그린 범죄 스릴러."
     },
-    description: "우연히 거액의 돈을 손에 넣은 남자와 그를 쫓는 살인자의 추격을 그린 범죄 스릴러."
-  },
-
-  {
-    id: 7,
-    title: "블랙 스완",
-    englishTitle: "Black Swan",
-    year: 2010,
-    genre: "스릴러, 드라마",
-    aliases: ["Black Swan"],
-    director: "대런 애러노프스키",
-    actors: ["나탈리 포트만", "밀라 쿠니스", "뱅상 카셀"],
-    poster: "",
-    ratings: {
-      imdb: 8.0,
-      cine21: 8.54,
-      rottenTomatoes: 84,
-      letterboxd: 4.0
+    {
+        id: 7,
+        title: "블랙 스완",
+        englishTitle: "Black Swan",
+        year: 2010,
+        genre: "스릴러, 드라마",
+        aliases: ["Black Swan"],
+        director: "대런 애러노프스키",
+        actors: ["나탈리 포트만", "밀라 쿠니스", "뱅상 카셀"],
+        poster: "",
+        ratings: { imdb: 8.0, cine21: 8.54, rottenTomatoes: 84, letterboxd: 4.0 },
+        description: "완벽한 발레 공연을 향한 한 발레리나의 집착과 내면의 변화를 그린 심리 스릴러."
     },
-    description: "완벽한 발레 공연을 향한 한 발레리나의 집착과 내면의 변화를 그린 심리 스릴러."
-  },
-
-  {
-    id: 8,
-    title: "그녀",
-    englishTitle: "Her",
-    year: 2013,
-    genre: "멜로, 로맨스, 드라마, SF",
-    aliases: ["Her"],
-    director: "스파이크 존즈",
-    actors: ["호아킨 피닉스", "에이미 아담스", "스칼렛 요한슨"],
-    poster: "",
-    ratings: {
-      imdb: 8.0,
-      cine21: 8.10,
-      rottenTomatoes: 82,
-      letterboxd: 4.0
+    {
+        id: 8,
+        title: "그녀",
+        englishTitle: "Her",
+        year: 2013,
+        genre: "멜로, 로맨스, 드라마, SF",
+        aliases: ["Her"],
+        director: "스파이크 존즈",
+        actors: ["호아킨 피닉스", "에이미 아담스", "스칼렛 요한슨"],
+        poster: "",
+        ratings: { imdb: 8.0, cine21: 8.10, rottenTomatoes: 82, letterboxd: 4.0 },
+        description: "인공지능 운영체제와 특별한 관계를 맺게 되는 한 남자의 이야기를 그린 SF 드라마."
     },
-    description: "인공지능 운영체제와 특별한 관계를 맺게 되는 한 남자의 이야기를 그린 SF 드라마."
-  },
-
-  {
-    id: 9,
-    title: "더 울프 오브 월 스트리트",
-    englishTitle: "The Wolf of Wall Street",
-    year: 2013,
-    genre: "코미디, 범죄, 드라마",
-    aliases: ["The Wolf of Wall Street"],
-    director: "마틴 스코세이지",
-    actors: ["레오나르도 디카프리오", "조나 힐", "마고 로비"],
-    poster: "",
-    ratings: {
-      imdb: 8.2,
-      cine21: 7.59,
-      rottenTomatoes: 83,
-      letterboxd: 4.0
+    {
+        id: 9,
+        title: "더 울프 오브 월 스트리트",
+        englishTitle: "The Wolf of Wall Street",
+        year: 2013,
+        genre: "코미디, 범죄, 드라마",
+        aliases: ["The Wolf of Wall Street"],
+        director: "마틴 스코세이지",
+        actors: ["레오나르도 디카프리오", "조나 힐", "마고 로비"],
+        poster: "",
+        ratings: { imdb: 8.2, cine21: 7.59, rottenTomatoes: 83, letterboxd: 4.0 },
+        description: "월스트리트에서 막대한 부를 쌓은 주식 중개인의 성공과 몰락을 그린 범죄 코미디 드라마."
     },
-    description: "월스트리트에서 막대한 부를 쌓은 주식 중개인의 성공과 몰락을 그린 범죄 코미디 드라마."
-  },
-
-  {
-    id: 10,
-    title: "라따뚜이",
-    englishTitle: "Ratatouille",
-    year: 2007,
-    genre: "애니메이션, 코미디, 가족",
-    aliases: ["Ratatouille"],
-    director: "브래드 버드",
-    actors: ["패튼 오스왈트", "루 로마노", "이안 홈"],
-    poster: "",
-    ratings: {
-      imdb: 8.1,
-      cine21: 8.28,
-      rottenTomatoes: 87,
-      letterboxd: 4.1
-    },
-    description: "요리를 좋아하는 생쥐 레미가 파리의 레스토랑에서 요리사의 꿈을 이루어가는 이야기."
-  }
+    {
+        id: 10,
+        title: "라따뚜이",
+        englishTitle: "Ratatouille",
+        year: 2007,
+        genre: "애니메이션, 코미디, 가족",
+        aliases: ["Ratatouille"],
+        director: "브래드 버드",
+        actors: ["패튼 오스왈트", "루 로마노", "이안 홈"],
+        poster: "",
+        ratings: { imdb: 8.1, cine21: 8.28, rottenTomatoes: 87, letterboxd: 4.1 },
+        description: "요리를 좋아하는 생쥐 레미가 파리의 레스토랑에서 요리사의 꿈을 이루어가는 이야기."
+    }
 ];
